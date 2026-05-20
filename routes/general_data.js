@@ -1,0 +1,36 @@
+const express = require('express')
+const router = express.Router()
+const { checkJwt } = require('../middlewares')
+
+const controller = require('../controllers/general_data')
+
+router.get('/org', [checkJwt.checkToken],controller.getOrganization)
+router.post('/org', [checkJwt.checkToken], controller.addOrganization)
+router.put('/org', [checkJwt.checkToken],controller.updateOrganization)
+router.get('/division', [checkJwt.checkToken],controller.getDivision)
+router.post('/division', [checkJwt.checkToken], controller.addDivision)
+router.put('/division', [checkJwt.checkToken],controller.updateDivision)
+
+router.get('/counterparty', [checkJwt.checkToken],controller.getCounterparty)
+router.post('/counterparty', [checkJwt.checkToken], controller.addCounterparty)
+router.put('/counterparty', [checkJwt.checkToken],controller.updateCounterparty)
+router.get('/employee', [checkJwt.checkToken],controller.getEmployee)
+router.post('/employee', [checkJwt.checkToken], controller.addEmployee)
+router.put('/employee', [checkJwt.checkToken],controller.updateEmployee)
+router.get('/c_employee', [checkJwt.checkToken],controller.getContractEmployee)
+router.post('/c_employee', [checkJwt.checkToken], controller.addContractEmployee)
+router.put('/c_employee', [checkJwt.checkToken],controller.updateContractEmployee)
+router.get('/c_counterparty', [checkJwt.checkToken],controller.getContractCounterparty)
+router.post('/c_counterparty', [checkJwt.checkToken], controller.addContractCounterparty)
+router.put('/c_counterparty', [checkJwt.checkToken],controller.updateContractCounterparty)
+router.get('/nomeclature', [checkJwt.checkToken],controller.getNomenclature)
+router.post('/nomeclature', [checkJwt.checkToken], controller.addNomenclature)
+router.put('/nomeclature', [checkJwt.checkToken],controller.updateNomenclature)
+
+router.get('/account', [checkJwt.checkToken],controller.getAccount)
+router.get('/position', [checkJwt.checkToken],controller.getPosition)
+router.get('/entity_type', [checkJwt.checkToken],controller.getEntity_type)
+router.get('/unit', [checkJwt.checkToken],controller.getUnit)
+router.get('/nomenclature_type', [checkJwt.checkToken],controller.getNomenclature_type)
+
+module.exports = router
