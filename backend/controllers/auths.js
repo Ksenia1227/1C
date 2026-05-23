@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 // Библиотека для создания JWT
 require('dotenv').config()
 // Загружает переменные окружения из .env файла.
-const secret = process.env.secret
+const secret = process.env.SECRET
 const { v4: uuidv4 } = require('uuid')
 // Генерирует уникальные идентификаторы для пользователей
 const ACCESS_LIFETIME = 15 * 60

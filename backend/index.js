@@ -7,6 +7,11 @@ app.use(express.json())
 app.use(cors({ origin: ["http://localhost:8081"] }));
 const port = process.env.PORT
 
+app.use((req, res, next) => {
+    console.log(req.method, req.body)
+    next()
+})
+
 //   const { get_auths_table } = require('./models/auths')
 //  const { get_users_table } = require('./models/user')
 //  const { get_account_table } = require('./models/account')

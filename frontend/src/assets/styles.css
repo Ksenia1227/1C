@@ -1,0 +1,15 @@
+:root {
+  --color-text: #1e2a38;
+  --color-bg: #FBED9E;
+  --color-buttndis: #765BB8;
+  --color-buttn: #3B2570;
+  --color-sth: #3B2570;
+  --color-dialog: #dbefff;
+  --color-card: rgba(236, 242, 243, 0.1);
+  --color-input: rgba(92, 81, 81, 0.2);
+  --color-placeholder: rgba(92, 81, 81, 0.2);
+  --color-card1: #d6e4f0;
+  --font-main: 'Montserrat Alternates', sans-serif;
+  --font-text: 'Inter', sans-serif;
+}
+
