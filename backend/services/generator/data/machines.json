@@ -1,0 +1,24 @@
+{
+  "machines": [
+    {"type": "Трактор", "model": "МТЗ-82", "brand": "Беларусь", "power": 82, "cost": 1800000},
+    {"type": "Комбайн", "model": "Claas Lexion 770", "brand": "Claas", "power": 350, "cost": 25000000},
+    {"type": "Трактор", "model": "Кировец К-744", "brand": "Петербургский тракторный завод", "power": 300, "cost": 12000000},
+    {"type": "Комбайн", "model": "John Deere S690", "brand": "John Deere", "power": 400, "cost": 30000000},
+    {"type": "Культиватор", "model": "КПС-4", "brand": "Ростсельмаш", "power": null, "cost": 800000},
+    {"type": "Сеялка", "model": "СЗ-3,6", "brand": "Ростсельмаш", "power": null, "cost": 1200000},
+    {"type": "Опрыскиватель", "model": "ОП-2000", "brand": "Агромаш", "power": null, "cost": 2500000},
+    {"type": "Плуг", "model": "ПЛН-5-35", "brand": "Туламашзавод", "power": null, "cost": 400000},
+    {"type": "Грузовик", "model": "КАМАЗ-65115", "brand": "КАМАЗ", "power": 240, "cost": 4500000},
+    {"type": "Прицеп", "model": "2ПТС-6", "brand": "Михневский ремонтно-механический завод", "power": null, "cost": 600000},
+    {"type": "Трактор", "model": "New Holland T7", "brand": "New Holland", "power": 280, "cost": 15000000},
+    {"type": "Комбайн", "model": "ACROS 595", "brand": "Ростсельмаш", "power": 320, "cost": 18000000},
+    {"type": "Разбрасыватель удобрений", "model": "РУМ-8", "brand": "Бобруйскагромаш", "power": null, "cost": 900000},
+    {"type": "Пресс-подборщик", "model": "ПР-145", "brand": "БелоцерковМАЗ", "power": null, "cost": 1100000},
+    {"type": "Косилка", "model": "КДП-302", "brand": "Германия", "power": null, "cost": 700000},
+    {"type": "Грабли", "model": "ГВК-6", "brand": "Кургансельмаш", "power": null, "cost": 300000},
+    {"type": "Трактор", "model": "Беларус 1221", "brand": "МТЗ", "power": 130, "cost": 5000000},
+    {"type": "Комбайн", "model": "Вектор 410", "brand": "Ростсельмаш", "power": 310, "cost": 16000000},
+    {"type": "Погрузчик", "model": "ПФ-0.8", "brand": "Алтайагромаш", "power": null, "cost": 850000},
+    {"type": "Экскаватор", "model": "ЭО-2621", "brand": "Ковровец", "power": 79, "cost": 2200000}
+  ]
+}

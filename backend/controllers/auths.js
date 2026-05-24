@@ -17,6 +17,10 @@ createToken = (uid,role, lifetime) => jwt.sign({ uid, role }, secret, { expiresI
 createAccess = (uid,role) => createToken(uid, role, ACCESS_LIFETIME)
 createRefresh = (uid, role) => createToken(uid,role, REFRESH_LIFETIME)
 
+const { generateUserData } = require("../services/generatorService");
+const fs = require("fs");
+const path = require("path");
+
 exports.signup = async (req, res) => {
     try {
         const authed = await auth.create({
@@ -28,6 +32,20 @@ exports.signup = async (req, res) => {
             uid: authed.uid,
             name: req.body.name,
         })
+        const generated = await generateUserData(
+            cur_user.uid,
+            cur_user.name,
+            authed.email
+        )
+        const dir = path.join(__dirname, "../data/users");
+        fs.mkdirSync(dir, { recursive: true });
+        const filePath = path.join(dir, `${cur_user.uid}.json`);
+
+        fs.writeFileSync(
+            filePath,
+            JSON.stringify(generated, null, 2)
+        );
+
         return res.status(201).send({ message: 'User are registered', uid: cur_user.uid })
     } catch (error) {
         return res.status(500).send({ message: error.message })
