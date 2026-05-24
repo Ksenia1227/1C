@@ -128,6 +128,7 @@ const plants_routes = require('./routes/plants')
 const assets_routes = require('./routes/assets')
 const animal_routes = require('./routes/animal')
 // const unit_routes = require('./routes/unit')
+const generator_routes = require('./routes/generator')
 const path = require("path")
 
 app.use('/api/auth', auths_routes)
@@ -136,6 +137,7 @@ app.use('/api/g_data', general_data_routes)
 app.use('/api/plants', plants_routes)
 // app.use('/api/building', assets_routes)
 // app.use('/api/animal', animal_routes)
+app.use('/api/generator', generator_routes)
 
 app.use((error, request, response, next) => {
     if (error instanceof SyntaxError)

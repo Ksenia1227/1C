@@ -8,15 +8,20 @@
       <h2>
         Описание
       </h2>
-      <router-link to="/practice"
+      <router-link v-if="isAuth" to="/practice"
           ><button>Приступить к практике</button></router-link
         >
     </div>
-    <div class="wrapper"><canvas ref="canvas"></canvas></div>
   </div>
 </template>
 
 <script setup>
+import { computed } from "vue"
+import { useStore } from "vuex"
+
+const store = useStore()
+
+const isAuth = computed(() => store.state.auth.isAuth)
 </script>
 
 <style scoped>

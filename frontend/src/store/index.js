@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import auth from "./auth";
 // import user from "./user";
+import generator from "./generator"
 
 export default createStore({
   state: {},
@@ -10,5 +11,6 @@ export default createStore({
   modules: {
     auth: auth,
     // user: user,
+    generator: generator
   },
 });
