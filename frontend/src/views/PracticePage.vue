@@ -1,34 +1,135 @@
 <template>
-  <div v-if="generated">
+  <div class="page">
+    <div class="steps-wrapper">
 
-    <h2>Организация</h2>
+      <div class="line"></div>
 
-    <p>{{ generated.organization[1] }}</p>
+      <div
+        v-for="(step, index) in steps"
+        :key="index"
+        class="step"
+        @click="goTo('/form')"
+      >
+        <div class="circle">
+          {{ index + 1 }}
+        </div>
 
-    <h2>Поля</h2>
+        <p class="label">
+          {{ step.title }}
+        </p>
+      </div>
 
-    <div
-      v-for="field in generated.fields"
-      :key="field.code"
-    >
-        <p>{{ field.name }}</p>
-        <p>{{ field.group }}</p>
-        <p>{{ field.area }}</p>
     </div>
-
   </div>
 </template>
 
 <script>
 export default {
-    computed: {
-        generated() {
-            return this.$store.state.generator.data
+  data() {
+    return {
+      steps: [
+        {
+          title: "НСИ"
+        },
+        {
+          title: "Ведомость остатков"
+        },
+        {
+          title: "Процессы"
+        },
+        {
+          title: "Оборотно-сальдовая ведомость"
         }
-    },
-
-    async mounted() {
-        await this.$store.dispatch("generator/loadData")
+      ]
     }
+  },
+
+  methods: {
+    goTo(route) {
+      this.$router.push(route)
+    }
+  }
 }
 </script>
+
+<style scoped>
+.page {
+  width: 100%;
+  min-height: calc(100vh - 44px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-main);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.steps-wrapper {
+  position: relative;
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.line {
+  position: absolute;
+  top: 28px;
+  left: 1%;
+  right: 8%;
+  height: 4px;
+  background: var(--color-buttndis);
+  z-index: 1;
+  border-radius: 10px;
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  text-align: center;
+}
+
+.step:hover {
+  transform: scale(1.05);
+}
+
+.circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--color-buttn);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.label {
+  margin-top: 12px;
+  font-size: 14px;
+  max-width: 140px;
+  line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+  .steps-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .line {
+    display: none;
+  }
+}
+</style>

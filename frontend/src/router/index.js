@@ -3,6 +3,7 @@ import Home from "@/views/HomePage.vue";
 import Registeration from "@/views/RegistrationPage.vue";
 import Login from "@/views/LoginPage.vue";
 import Practice from "@/views/PracticePage.vue";
+import Form from "@/views/FormPage.vue";
 // import instance from "@/middlewares";
 
 const routes = [
@@ -10,6 +11,7 @@ const routes = [
   { path: "/register", component: Registeration },
   { path: "/login", component: Login },
   { path: "/practice", component: Practice },
+  { path: "/form", component: Form }
 ];
 
 const router = createRouter({
