@@ -8,7 +8,7 @@
       Данные организации
     </h1>
 
-    <details open class="section">
+    <details class="section">
       <summary>Организация</summary>
 
       <div class="card">
@@ -184,7 +184,7 @@
     </details>
 
     <details class="section">
-    <summary>Номенклатура</summary>
+    <summary>Номенклатура (растениеводство)</summary>
 
     <div class="table-wrapper">
         <table>
@@ -298,8 +298,8 @@
             <td>{{ posev[3] }}</td>
             <td>{{ posev[4] }}</td>
             <td>{{ posev[5] }}</td>
+            <td>{{ posev[6] }}</td>
             <td>{{ posev[7] }}</td>
-            <td>{{ posev[8] }}</td>
             <td>{{ posev[8] }}</td>
             </tr>
         </tbody>
@@ -308,7 +308,7 @@
     </details>
 
     <details class="section">
-    <summary>Карточка остатка</summary>
+    <summary>Карточка остатка (растениеводство)</summary>
 
     <div class="table-wrapper">
         <table>
@@ -345,6 +345,312 @@
     </details>
 
     <details class="section">
+      <summary>Поголовье по группам</summary>
+
+      <div class="summary-block">
+        <pre>{{ generated.livestock.summary }}</pre>
+      </div>
+    </details>
+
+    <details class="section">
+    <summary>Животные</summary>
+
+    <div class="table-wrapper">
+        <table>
+        <thead>
+            <tr>
+            <th>Инвентарный номер</th>
+            <th>Пол</th>
+            <th>Дата рождения</th>
+            <th>Порода</th>
+            <th>Группа</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr
+            v-for="(live, index) in generated.livestock.livestock"
+            :key="index"
+            >
+            <td>{{ live[0] }}</td>
+            <td>{{ live[1] }}</td>
+            <td>{{ formatDate(live[2]) }}</td>
+            <td>{{ live[3] }}</td>
+            <td>{{ live[4] }}</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+    </details>
+
+    <details class="section">
+    <summary>Ввод остатков животноводство</summary>
+
+    <div class="table-wrapper">
+        <table>
+        <thead>
+            <tr>
+            <th>Счет</th>
+            <th>Инвентарный номер</th>
+            <th>Подразделение</th>
+            <th>Склад</th>
+            <th>Живая масса, кг</th>
+            <th>Сумма, руб</th>
+            <th>Первоначальная стоимость, руб</th>
+            <th>Срок полезного использования, мес</th>
+            <th>Дата принятия к учету</th>
+            <th>Количество голов</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr
+            v-for="(liveOst, index) in generated.livestock.ani_ost"
+            :key="index"
+            >
+            <td>{{ liveOst[0] }}</td>
+            <td>{{ liveOst[1] }}</td>
+            <td>{{ liveOst[2] }}</td>
+            <td>{{ liveOst[3] }}</td>
+            <td>{{ liveOst[4] }}</td>
+            <td>{{ liveOst[5] }}</td>
+            <td>{{ liveOst[6] }}</td>
+            <td>{{ liveOst[7] }}</td>
+            <td>{{ liveOst[8] }}</td>
+            <td>{{ liveOst[9] }}</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+    </details>
+
+    <details class="section">
+      <summary>Здания и сооружения</summary>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Наименование</th>
+              <th>Назначение</th>
+              <th>Площадь, м²</th>
+              <th>Стоимость, млн ₽</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="(building, index) in generated.buildings"
+              :key="index"
+            >
+              <td>{{ building[0] }}</td>
+              <td>{{ building[1] }}</td>
+              <td>{{ building[2] }}</td>
+              <td>{{ building[3] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="section">
+      <summary>Машинно-тракторный парк</summary>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Наименование</th>
+              <th>Изготовитель</th>
+              <th>Местонахождение</th>
+              <th>Марка</th>
+              <th>Дата выпуска</th>
+              <th>Номер паспорта (регистрационный)</th>
+              <th>Мощность, л.с</th>
+              <th>Номер двигателя</th>
+              <th>Заводской номер</th>
+              <th>Срок службы, мес</th>
+              <th>Первоначальная стоимость</th>
+              <th>Дата покупки</th>
+              <th>Дата ввода в эксплуатацию</th>
+              <th>Дата снятия с учета</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="(machine, index) in generated.machines"
+              :key="index"
+            >
+              <td>{{ machine[0] }}</td>
+              <td>{{ machine[1] }}</td>
+              <td>{{ machine[2] }}</td>
+              <td>{{ machine[3] }}</td>
+              <td>{{ machine[4] }}</td>
+              <td>{{ machine[5] }}</td>
+              <td>{{ machine[6] }}</td>
+              <td>{{ machine[7] }}</td>
+              <td>{{ machine[8] }}</td>
+              <td>{{ machine[9] }}</td>
+              <td>{{ machine[10] }}</td>
+              <td>{{ machine[11] }}</td>
+              <td>{{ machine[12] }}</td>
+              <td>{{ machine[13] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="section">
+      <summary>Материалы и товары</summary>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Вид номенклатуры</th>
+              <th>Наименование</th>
+              <th>Полное Наименование</th>
+              <th>Единица</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="(item, index) in generated.materials.materials_table"
+              :key="index"
+            >
+              <td>{{ item[0] }}</td>
+              <td>{{ item[1] }}</td>
+              <td>{{ item[2] }}</td>
+              <td>{{ item[3] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="section">
+      <summary>Остатки материалов и товаров</summary>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Номенклатура</th>
+              <th>Счет</th>
+              <th>Склад</th>
+              <th>Количество</th>
+              <th>Ед. изм.</th>
+              <th>Номер</th>
+              <th>Контрагент</th>
+              <th>Стоимость, руб</th>
+              <th>Подразделение</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="(item, index) in generated.materials.materials_ost_table"
+              :key="index"
+            >
+              <td>{{ item[0] }}</td>
+              <td>{{ item[1] }}</td>
+              <td>{{ item[2] }}</td>
+              <td>{{ item[3] }}</td>
+              <td>{{ item[4] }}</td>
+              <td>{{ item[5] }}</td>
+              <td>{{ item[6] }}</td>
+              <td>{{ item[7] }}</td>
+              <td>{{ item[8] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="section">
+      <summary>Контрагенты</summary>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Комментарий</th>
+              <th>Вид контрагента</th>
+              <th>Наименование для документа</th>
+              <th>Наименование в программе</th>
+              <th>Страна регистрации</th>
+              <th>ИНН</th>
+              <th>КПП</th>
+              <th>ОГРН</th>
+              <th>Банк</th>
+              <th>Расчетный счет</th>
+              <th>Юридический адрес</th>
+              <th>Фактический адрес</th>
+              <th>Телефон</th>
+              <th>Email</th>
+              <th>Контактное лицо</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="(contractor, index) in generated.contractors.contractors_table"
+              :key="index"
+            >
+              <td>{{ contractor[0] }}</td>
+              <td>{{ contractor[1] }}</td>
+              <td>{{ contractor[2] }}</td>
+              <td>{{ contractor[3] }}</td>
+              <td>{{ contractor[4] }}</td>
+              <td>{{ contractor[5] }}</td>
+              <td>{{ contractor[6] }}</td>
+              <td>{{ contractor[7] }}</td>
+              <td>{{ contractor[8] }}</td>
+              <td>{{ contractor[9] }}</td>
+              <td>{{ contractor[10] }}</td>
+              <td>{{ contractor[11] }}</td>
+              <td>{{ contractor[12] }}</td>
+              <td>{{ contractor[13] }}</td>
+              <td>{{ contractor[14] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="section">
+      <summary>Договоры с контрагентами</summary>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Вид договора</th>
+              <th>Наименование</th>
+              <th>Дата</th>
+              <th>Срок действия</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="(contract, index) in generated.contractors.contracts_table"
+              :key="index"
+            >
+              <td>{{ contract[0] }}</td>
+              <td>{{ contract[1] }}</td>
+              <td>{{ formatDate(contract[2]) }}</td>
+              <td>{{ contract[3] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="section">
       <summary>
         Сотрудники ({{ generated.employees.employees.length }})
       </summary>
@@ -375,7 +681,7 @@
             >
               <td>{{ employee[0] }}</td>
               <td>{{ employee[1] }}</td>
-              <td>{{ formatDate(employee[2]) }}</td>
+              <td>{{ employee[2] }}</td>
               <td>{{ employee[3] }}</td>
               <td>{{ employee[4] }}</td>
               <td>{{ employee[5] }}</td>
@@ -385,6 +691,43 @@
               <td>{{ employee[9] }}</td>
               <td>{{ employee[10] }}</td>
               <td>{{ employee[11] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="section">
+      <summary>Договоры с сотрудниками</summary>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Номер</th>
+              <th>Дата приема на работу</th>
+              <th>Подразделение</th>
+              <th>Должность</th>
+              <th>Оклад</th>
+              <th>Ставка</th>
+              <th>Вид занятости</th>
+              <th>Тип документа</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="(contract, index) in generated.employees.contracts"
+              :key="index"
+            >
+              <td>{{ contract[0] }}</td>
+              <td>{{ contract[1] }}</td>
+              <td>{{ contract[2] }}</td>
+              <td>{{ contract[3] }}</td>
+              <td>{{ contract[4] }} ₽</td>
+              <td>{{ contract[5] }}</td>
+              <td>{{ contract[6] }}</td>
+              <td>{{ contract[7] }}</td>
             </tr>
           </tbody>
         </table>
@@ -424,6 +767,7 @@ export default {
 .page {
   padding: 40px;
   color: var(--color-text);
+  background: var(--color-bg);
 }
 
 .title {
