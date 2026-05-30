@@ -8,7 +8,7 @@
         v-for="(step, index) in steps"
         :key="index"
         class="step"
-        @click="goTo('/form')"
+        @click="goTo(step.form)"
       >
         <div class="circle">
           {{ index + 1 }}
@@ -29,16 +29,24 @@ export default {
     return {
       steps: [
         {
-          title: "НСИ"
+          title: "НСИ",
+          form: "/form"
         },
         {
-          title: "Ведомость остатков"
+          title: "Начальные остатки",
+          form: "/form1"
         },
         {
-          title: "Процессы"
+          title: "Ведомость остатков",
+          form: "/form2"
         },
         {
-          title: "Оборотно-сальдовая ведомость"
+          title: "Процессы",
+          form: "/form3"
+        },
+        {
+          title: "Оборотно-сальдовая ведомость",
+          form: "/form4"
         }
       ]
     }
