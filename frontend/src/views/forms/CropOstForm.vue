@@ -1,101 +1,93 @@
 <template>
   <div class="dynamic-form">
     <div class="form-section">
-      <h3>Машино-тракторный парк</h3>
-      <div class="machines-list">
-        <div v-for="(machine, idx) in formData.machines" :key="idx" class="machine-card">
+      <h3>Остатки растениеводства</h3>
+      <div class="ost-list">
+        <div v-for="(ost, idx) in formData.ost" :key="idx" class="ost-card">
           <div class="card-header">
-            <span>Новая единица техники {{ idx + 1 }}</span>
-            <button class="remove-btn" @click="removeMachine(idx)">✕</button>
+            <span>Остаток {{ idx + 1 }} </span>
+            <button class="remove-btn" @click="removeOst(idx)">✕</button>
           </div>
           <div class="form-grid">
-            <div class="form-field full-width">
+            <div class="form-field">
               <label>Наименование</label>
-              <input v-model="machine[0]" type="text" />
+              <input v-model="ost.name" type="text" />
             </div>
             <div class="form-field">
-              <label>Изготовитель</label>
-              <input v-model="machine[1]" type="text" />
+              <label>Счет</label>
+              <input v-model="ost.account" type="text" />
             </div>
             <div class="form-field">
-              <label>Местонахождение</label>
-              <input v-model="machine[2]" type="text" />
+              <label>Склад</label>
+              <input v-model="ost.warehouse" type="text" />
             </div>
             <div class="form-field">
-              <label>Марка</label>
-              <input v-model="machine[3]" type="text" />
+              <label>Серия (партия)</label>
+              <input v-model="ost.series" type="text" />
             </div>
             <div class="form-field">
-              <label>Дата выпуска</label>
-              <input v-model="machine[4]" type="date" />
+              <label>Количество</label>
+              <input v-model.number="ost.quantity" type="number" step="0.01" />
             </div>
             <div class="form-field">
-              <label>Номер паспорта (регистрационный)</label>
-              <input v-model="machine[5]" type="text" />
+              <label>Единица измерения</label>
+              <input v-model="ost.unit" type="text" />
             </div>
             <div class="form-field">
-              <label>Мощность, л.с</label>
-              <input v-model.number="machine[6]" type="number" />
+              <label>Код номенклатуры</label>
+              <input v-model="ost.code" type="text" />
             </div>
             <div class="form-field">
-              <label>Номер двигателя</label>
-              <input v-model="machine[7]" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Заводской номер</label>
-              <input v-model="machine[8]" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Срок службы, мес</label>
-              <input v-model.number="machine[9]" type="number" />
-            </div>
-            <div class="form-field">
-              <label>Первоначальная стоимость</label>
-              <input v-model.number="machine[10]" type="number" step="0.01" />
-            </div>
-            <div class="form-field">
-              <label>Дата покупки</label>
-              <input v-model="machine[11]" type="date" />
-            </div>
-            <div class="form-field">
-              <label>Дата ввода в эксплуатацию</label>
-              <input v-model="machine[12]" type="date" />
-            </div>
-            <div class="form-field">
-              <label>Дата снятия с учета</label>
-              <input v-model="machine[13]" type="text" />
+              <label>Подразделение</label>
+              <input v-model="ost.division" type="text" />
             </div>
           </div>
         </div>
-        <button class="add-btn" @click="addMachine">+ Добавить единицу техники</button>
+        <button class="add-btn" @click="addOst">+ Добавить остаток</button>
       </div>
     </div>
 
     <div class="form-actions">
       <button class="save-btn">Сохранить</button>
-      <button class="reset-btn">Сбросить</button>
+      <button class="reset-btn" @click="resetForm">Сбросить</button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'MachineryForm',
+  name: 'CropOstForm',
   data() {
     return {
       formData: {
-        machines: [
-          ['', '', '', '', '', '', null, '', '', null, null, '', '', '']
+        ost: [
+          { 
+            name: '', account: '', warehouse: '', series: '', 
+            quantity: null, unit: '', code: '', division: '' 
+          }
         ]
       }
     }
   },
   methods: {
-    addMachine() {
-      this.formData.machines.push(['', '', '', '', '', '', null, '', '', null, null, '', '', ''])
+    addOst() {
+      this.formData.ost.push({ 
+        name: '', account: '', warehouse: '', series: '', 
+        quantity: null, unit: '', code: '', division: '' 
+      })
     },
-    removeMachine(index) {
-      this.formData.machines.splice(index, 1)
+    removeOst(index) {
+      this.formData.ost.splice(index, 1)
+    },
+    resetForm() {
+      this.formData = {
+        ost: [
+          { 
+            name: '', account: '', warehouse: '', series: '', 
+            quantity: null, unit: '', code: '', division: '' 
+          }
+        ]
+      }
     }
   }
 }
@@ -125,13 +117,9 @@ export default {
 
 .form-field {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 150px 1fr;
   align-items: center;
   gap: 12px;
-}
-
-.form-field.full-width {
-  grid-column: span 2;
 }
 
 .form-field label {
@@ -140,7 +128,8 @@ export default {
   font-weight: normal;
 }
 
-.form-field input {
+.form-field input,
+.form-field select {
   width: 100%;
   padding: 8px 12px;
   background: white;
@@ -149,7 +138,7 @@ export default {
   color: #000;
 }
 
-.machine-card {
+.ost-card {
   background: rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   padding: 20px;
@@ -178,6 +167,12 @@ export default {
   color: #f44336;
   cursor: pointer;
   font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.remove-btn:hover {
+  background: rgba(244, 67, 54, 0.3);
+  transform: scale(1.02);
 }
 
 .add-btn {
@@ -190,7 +185,13 @@ export default {
   width: fit-content;
   font-size: 14px;
   font-weight: 500;
+  transition: all 0.2s ease;
   margin-top: 8px;
+}
+
+.add-btn:hover {
+  background: rgba(156, 39, 176, 0.25);
+  transform: translateY(-1px);
 }
 
 .form-actions {
@@ -225,15 +226,19 @@ export default {
   .form-grid {
     grid-template-columns: 1fr;
   }
-  .form-field.full-width {
-    grid-column: span 1;
-  }
   .form-field {
     grid-template-columns: 1fr;
     gap: 6px;
   }
   .form-field label {
     font-weight: 600;
+  }
+  .form-actions {
+    flex-direction: column;
+  }
+  .save-btn,
+  .reset-btn {
+    width: 100%;
   }
 }
 </style>

@@ -10,12 +10,12 @@
           v-for="button in mainButtons"
           :key="button.id"
           class="tech-button"
-          :class="{ active: currentMainButton === button.id }"
+          :class="{ active: isActiveMainButton(button.id) }"
           @click="selectMainButton(button.id)"
         >
           <div
             class="dot"
-            :class="{ active: currentMainButton === button.id }"
+            :class="{ active: isActiveMainButton(button.id) }"
           ></div>
           <span class="button-text">{{ button.label }}</span>
         </div>
@@ -31,7 +31,33 @@
       </div>
 
       <div class="form-content">
-        <component :is="currentFormComponent" />
+        <div v-if="currentMainButton === 'organization'">
+            <OrganizationForm />
+          </div>
+          
+          <div v-else-if="currentMainButton === 'contractors'">
+            <ContractorsForm />
+          </div>
+          
+          <div v-else-if="currentMainButton === 'employees'">
+            <EmployeesForm />
+          </div>
+
+          <div v-else-if="currentMainButton === 'crop'">
+          <CropForm />
+        </div>
+
+        <div v-else-if="currentMainButton === 'livestock'">
+          <LivestockForm />
+        </div>
+        
+        <div v-else-if="currentMainButton === 'buildings'">
+          <BuildingsForm />
+        </div>
+        
+        <div v-else-if="currentMainButton === 'machinery'">
+          <MachineryForm />
+        </div>
       </div>
 
       <div class="nav-header">
@@ -52,8 +78,9 @@
 </template>
 
 <script>
-// Импорт компонентов форм
 import OrganizationForm from "./forms/OrganizationForm.vue";
+import ContractorsForm from "./forms/ContractorsForm.vue";
+import EmployeesForm from "./forms/EmployeesForm.vue";
 import CropForm from "./forms/CropForm.vue";
 import LivestockForm from "./forms/LivestockForm.vue";
 import BuildingsForm from "./forms/BuildingsForm.vue";
@@ -64,6 +91,8 @@ export default {
 
   components: {
     OrganizationForm,
+    ContractorsForm,
+    EmployeesForm,
     CropForm,
     LivestockForm,
     BuildingsForm,
@@ -73,6 +102,7 @@ export default {
   data() {
     return {
       currentMainButton: "organization",
+
       mainButtons: [
         { id: "organization", label: "Общая информация" },
         { id: "crop", label: "Растениеводство" },
@@ -81,20 +111,13 @@ export default {
         { id: "machinery", label: "Машино-тракторный парк" },
       ],
 
-      mainForms: {
-        organization: "OrganizationForm",
-        crop: "CropForm",
-        livestock: "LivestockForm",
-        buildings: "BuildingsForm",
-        machinery: "MachineryForm",
-      },
-
       taskTexts: {
-        organization:
-          "заполнить сведения об организации, подразделениях, банковских реквизитах и контрагентах",
+        organization: "заполнить основные сведения (организация, подразделения, банки, налоговая, ПФР, ФСС, статистика)",
+        contractors: "заполнить сведения о контрагентах и договорах",
+        employees: "заполнить сведения о сотрудниках и договорах",
         crop: "заполнить информацию о полях, культурах и структуре посевных площадей",
         livestock:
-          "заполнить данные о поголовье, группах животных и вводе остатков",
+          "заполнить данные о поголовье и животных",
         buildings: "заполнить сведения о зданиях и сооружениях",
         machinery: "заполнить данные машинно-тракторного парка",
       },
@@ -102,26 +125,15 @@ export default {
   },
 
   computed: {
-    // Текущий ID активной кнопки
-    currentActiveId() {
-      return this.currentMainButton;
-    },
-
-    // Текущий компонент формы
-    currentFormComponent() {
-      return this.mainForms[this.currentMainButton];
-    },
 
     // Текущий текст задания
     currentTaskText() {
-      return (
-        this.taskTexts[this.currentActiveId] || "заполнить необходимые данные"
-      );
+      return this.taskTexts[this.currentMainButton] || "заполнить необходимые данные";
     },
 
     // Общий список всех форм в порядке навигации
     allFormsList() {
-      return ["organization", "crop", "livestock", "buildings", "machinery"];
+      return ["organization", "contractors", "employees", "crop", "livestock", "buildings", "machinery"];
     },
 
     // Текущий индекс формы в общем списке
@@ -146,6 +158,16 @@ export default {
   },
 
   methods: {
+
+    isActiveMainButton(buttonId) {
+      if (buttonId === 'organization') {
+        return this.currentMainButton === 'organization' || 
+               this.currentMainButton === 'contractors' || 
+               this.currentMainButton === 'employees';
+      }
+      return this.currentMainButton === buttonId;
+    },
+
     selectMainButton(buttonId) {
       this.currentMainButton = buttonId;
     },
@@ -198,15 +220,6 @@ export default {
   margin-bottom: 28px;
 }
 
-.group-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 12px;
-  padding-left: 8px;
-}
-
 .tech-button {
   display: flex;
   align-items: center;
@@ -238,13 +251,6 @@ export default {
 .dot.active {
   background: #9c27b0;
   box-shadow: 0 0 6px #9c27b0;
-}
-
-.nav-header {
-  padding: 20px 32px;
-  margin-top: auto;
-  background: var(--color-block);
-  border-top: 1px solid rgba(156, 39, 176, 0.2);
 }
 
 .button-text {
@@ -297,29 +303,33 @@ export default {
   color: black;
 }
 
+.nav-header {
+  padding: 20px 32px;
+  margin-top: auto;
+  background: var(--color-block);
+  border-top: 1px solid rgba(156, 39, 176, 0.2);
+}
+
 .nav-arrows {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 16px;
-  padding: 8px 16px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  border: 1px solid rgba(156, 39, 176, 0.2);
 }
 
 .nav-arrow {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(156, 39, 176, 0.3);
-  color: var(--color-text);
-  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  color: #9c27b0;
+  font-size: 24px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
 }
 
 .nav-arrow:hover:not(:disabled) {
@@ -335,7 +345,8 @@ export default {
 
 .form-counter {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #000000;
+  font-weight: 500;
 }
 
 .form-content {
@@ -377,10 +388,6 @@ export default {
     gap: 8px;
   }
 
-  .group-title {
-    width: 100%;
-  }
-
   .tech-button {
     flex: 0 0 auto;
   }
@@ -392,10 +399,6 @@ export default {
   }
 
   .form-content {
-    padding: 16px;
-  }
-
-  .form-content :deep(.dynamic-form) {
     padding: 16px;
   }
 }

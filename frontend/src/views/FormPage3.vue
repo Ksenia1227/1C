@@ -65,7 +65,7 @@
 <script>
 // Импорт компонентов форм
 import OrganizationForm from './forms/OrganizationForm.vue'
-import CropForm from './forms/CropForm.vue'
+import CropForm from "./forms/CropForm.vue";
 import LivestockForm from './forms/LivestockForm.vue'
 import BuildingsForm from './forms/BuildingsForm.vue'
 import MachineryForm from './forms/MachineryForm.vue'
