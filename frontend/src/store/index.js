@@ -2,6 +2,7 @@ import { createStore } from "vuex";
 import auth from "./auth";
 // import user from "./user";
 import generator from "./generator"
+import organization from "./organization";
 
 export default createStore({
   state: {},
@@ -11,6 +12,7 @@ export default createStore({
   modules: {
     auth: auth,
     // user: user,
-    generator: generator
+    generator: generator,
+    organization: organization
   },
 });

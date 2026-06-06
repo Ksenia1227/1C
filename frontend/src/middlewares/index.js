@@ -2,7 +2,7 @@ import axios from "axios";
 import store from "@/store";
 
 const instance = axios.create({
-  baseURL: process.env.VUE_APP_SERVER,
+  baseURL: process.env.VUE_APP_SERVER + '/api',
   headers: {
     "Content-Type": "application/json;charset=utf-8",
   },

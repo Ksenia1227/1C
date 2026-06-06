@@ -1,70 +1,79 @@
 <template>
-  <div class="dynamic-form">
+  <form @submit.prevent="sendForm" class="dynamic-form">
     <div class="form-section">
       <h3>Организация</h3>
       <div class="form-grid">
         <div class="form-field">
           <label>Вид организации</label>
-          <select v-model="formData.organizationType">
-            <option>Юридическое лицо</option>
-            <option>Крестьянское фермерское хозяйство</option>
-            <option>Индивидуальный предприниматель</option>
+          <select v-model="formData.organization.type_id">
+            <option :value="1">Юридическое лицо</option>
+            <option :value="2">Физическое лицо</option>
+            <option :value="3">Индивидуальный предприниматель (ИП)</option>
+            <option :value="4">Общество с ограниченной ответственностью (ООО)</option>
+            <option :value="5">Акционерное общество (АО)</option>
+            <option :value="6">Публичное акционерное общество (ПАО)</option>
+            <option :value="7">Крестьянское фермерское хозяйство (КФХ)</option>
+            <option :value="8">Сельскохозяйственный производственный кооператив (СПК)</option>
+            <option :value="9">Государственное унитарное предприятие (ГУП)</option>
+            <option :value="10">Муниципальное унитарное предприятие (МУП)</option>
+            <option :value="11">Некоммерческая организация</option>
+            <option :value="12">Простое товарищество</option>
           </select>
         </div>
 
         <div class="form-field">
           <label>Сокращенное наименование</label>
-          <input v-model="formData.shortName" type="text" />
+          <input v-model="formData.organization.short_name" type="text" />
         </div>
 
         <div class="form-field full-width">
           <label>Полное наименование</label>
-          <input v-model="formData.fullName" type="text" />
+          <input v-model="formData.organization.full_name" type="text" />
         </div>
 
         <div class="form-field">
           <label>ИНН</label>
-          <input v-model="formData.inn" type="text" />
+          <input v-model="formData.organization.inn" type="text" />
         </div>
 
         <div class="form-field">
           <label>КПП</label>
-          <input v-model="formData.kpp" type="text" />
+          <input v-model="formData.organization.kpp" type="text" />
         </div>
 
         <div class="form-field">
           <label>ОГРН</label>
-          <input v-model="formData.ogrn" type="text" />
+          <input v-model="formData.organization.ogrn" type="text" />
         </div>
 
         <div class="form-field">
           <label>Дата регистрации</label>
-          <input v-model="formData.regDate" type="date" />
+          <input v-model="formData.organization.registration_date" type="date" />
         </div>
 
         <div class="form-field">
           <label>Регистрирующий орган</label>
-          <input v-model="formData.registr" type="text" />
+          <input v-model="formData.organization.registration_authority" type="text" />
         </div>
 
         <div class="form-field full-width">
           <label>Юридический адрес</label>
-          <input v-model="formData.legalAddress" type="text" />
+          <input v-model="formData.organization.legal_address" type="text" />
         </div>
 
         <div class="form-field full-width">
           <label>Фактический адрес</label>
-          <input v-model="formData.actualAddress" type="text" />
+          <input v-model="formData.organization.actual_address" type="text" />
         </div>
 
         <div class="form-field">
           <label>Телефон</label>
-          <input v-model="formData.phone" type="tel" />
+          <input v-model="formData.organization.phone" type="tel" />
         </div>
 
         <div class="form-field">
           <label>Электронная почта</label>
-          <input v-model="formData.email" type="email" />
+          <input v-model="formData.organization.email" type="email" />
         </div>
       </div>
     </div>
@@ -74,209 +83,245 @@
       <div class="repeating-fields">
         <div v-for="(div, idx) in formData.divisions" :key="idx" class="repeating-row">
           <input v-model="formData.divisions[idx]" type="text" placeholder="Название подразделения" />
-          <button class="remove-btn" @click="removeDivision(idx)">✕</button>
+          <button type="button" class="remove-btn" @click="removeDivision(idx)">✕</button>
         </div>
-        <button class="add-btn" @click="addDivision">+ Добавить подразделение</button>
+        <button type="button" class="add-btn" @click="addDivision">+ Добавить подразделение</button>
       </div>
     </div>
 
     <div class="form-section">
       <h3>Банковские реквизиты</h3>
-      <div class="repeating-fields">
-        <div v-for="(bank, idx) in formData.banks" :key="idx" class="repeating-row">
-          <input v-model="formData.banks[idx].bank" type="text" placeholder="Банк" />
-          <input v-model="formData.banks[idx].account" type="text" placeholder="Расчетный счет" />
-          <button class="remove-btn" @click="removeBank(idx)">✕</button>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Банк</label>
+          <input v-model="formData.bank.bank" type="text" />
         </div>
-        <button class="add-btn" @click="addBank">+ Добавить банк</button>
+        <div class="form-field">
+          <label>Расчетный счет</label>
+          <input v-model="formData.bank.checking_account" type="text" />
+        </div>
       </div>
     </div>
 
     <div class="form-section">
       <h3>Налоговая инспекция</h3>
-      <div class="repeating-fields">
-        <div v-for="(tax, idx) in formData.tax" :key="idx" class="repeating-card">
-          <div class="form-grid">
-            <div class="form-field">
-              <label>Код инспекции</label>
-              <input v-model="formData.tax[idx].code" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Наименование</label>
-              <input v-model="formData.tax[idx].name" type="text" />
-            </div>
-            <div class="form-field full-width">
-              <label>Полное наименование</label>
-              <input v-model="formData.tax[idx].fullName" type="text" />
-            </div>
-            <div class="form-field">
-              <label>ОКТМО</label>
-              <input v-model="formData.tax[idx].oktmo" type="text" />
-            </div>
-            <div class="form-field">
-              <label>ОКАТО</label>
-              <input v-model="formData.tax[idx].okato" type="text" />
-            </div>
-          </div>
-          <div class="card-actions">
-            <button class="remove-btn-card" @click="removeTax(idx)">✕ Удалить</button>
-          </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Код инспекции</label>
+          <input v-model="formData.taxOffice.tax_office_code" type="text" />
         </div>
-        <button class="add-btn" @click="addTax">+ Добавить налоговую инспекцию</button>
+        <div class="form-field">
+          <label>Наименование</label>
+          <input v-model="formData.taxOffice.name_tax_office" type="text" />
+        </div>
+        <div class="form-field full-width">
+          <label>Полное наименование</label>
+          <input v-model="formData.taxOffice.full_name_tax_office" type="text" />
+        </div>
+        <div class="form-field">
+          <label>ОКТМО</label>
+          <input v-model="formData.taxOffice.oktmo" type="text" />
+        </div>
+        <div class="form-field">
+          <label>ОКАТО</label>
+          <input v-model="formData.taxOffice.okato" type="text" />
+        </div>
       </div>
     </div>
 
     <div class="form-section">
       <h3>Пенсионный фонд (ПФР)</h3>
-      <div class="repeating-fields">
-        <div v-for="(pfr, idx) in formData.pfr" :key="idx" class="repeating-row">
-          <input v-model="formData.pfr[idx].regNumber" type="text" placeholder="Регистрационный номер" />
-          <input v-model="formData.pfr[idx].code" type="text" placeholder="Код территориального органа" />
-          <input v-model="formData.pfr[idx].name" type="text" placeholder="Наименование территориального органа" />
-          <button class="remove-btn" @click="removePfr(idx)">✕</button>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Регистрационный номер</label>
+          <input v-model="formData.pfr.registration_number_pfr" type="text" />
         </div>
-        <button class="add-btn" @click="addPfr">+ Добавить ПФР</button>
+        <div class="form-field">
+          <label>Код территориального органа</label>
+          <input v-model="formData.pfr.territorial_code_pfr" type="text" />
+        </div>
+        <div class="form-field full-width">
+          <label>Наименование территориального органа</label>
+          <input v-model="formData.pfr.territorial_name_pfr" type="text" />
+        </div>
       </div>
     </div>
 
     <div class="form-section">
       <h3>Фонд социального страхования (ФСС)</h3>
-      <div class="repeating-fields">
-        <div v-for="(fss, idx) in formData.fss" :key="idx" class="repeating-row">
-          <input v-model="formData.fss[idx].regNumber" type="text" placeholder="Регистрационный номер" />
-          <input v-model="formData.fss[idx].code" type="text" placeholder="Код подчиненности" />
-          <input v-model="formData.fss[idx].name" type="text" placeholder="Территориальный орган" />
-          <button class="remove-btn" @click="removeFss(idx)">✕</button>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Регистрационный номер</label>
+          <input v-model="formData.fss.registration_number_fss" type="text" />
         </div>
-        <button class="add-btn" @click="addFss">+ Добавить ФСС</button>
+        <div class="form-field">
+          <label>Код подчиненности</label>
+          <input v-model="formData.fss.subordination_code" type="text" />
+        </div>
+        <div class="form-field full-width">
+          <label>Территориальный орган</label>
+          <input v-model="formData.fss.territorial_name_fss" type="text" />
+        </div>
       </div>
     </div>
 
     <div class="form-section">
       <h3>Коды статистики</h3>
-      <div class="repeating-fields">
-        <div v-for="(stat, idx) in formData.statistics" :key="idx" class="repeating-card">
-          <div class="form-grid">
-            <div class="form-field">
-              <label>ОКОПФ</label>
-              <input v-model="formData.statistics[idx].okopf" type="text" />
-            </div>
-            <div class="form-field">
-              <label>ОКФС</label>
-              <input v-model="formData.statistics[idx].okfs" type="text" />
-            </div>
-            <div class="form-field">
-              <label>ОКВЭД</label>
-              <input v-model="formData.statistics[idx].okved" type="text" />
-            </div>
-            <div class="form-field">
-              <label>ОКПО</label>
-              <input v-model="formData.statistics[idx].okpo" />
-            </div>
-            <div class="form-field full-width">
-              <label>Код территориального органа Росстата</label>
-              <input v-model="formData.statistics[idx].rosstatCode" />
-            </div>
-          </div>
-          <div class="card-actions">
-            <button class="remove-btn-card" @click="removeStatistics(idx)">✕ Удалить</button>
-          </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>ОКОПФ</label>
+          <input v-model="formData.statistics.okopf" type="text" />
         </div>
-        <button class="add-btn" @click="addStatistics">+ Добавить коды статистики</button>
+        <div class="form-field">
+          <label>ОКФС</label>
+          <input v-model="formData.statistics.okfs" type="text" />
+        </div>
+        <div class="form-field">
+          <label>ОКВЭД</label>
+          <input v-model="formData.statistics.okved" type="text" />
+        </div>
+        <div class="form-field">
+          <label>ОКПО</label>
+          <input v-model="formData.statistics.okpo" />
+        </div>
+        <div class="form-field full-width">
+          <label>Код территориального органа Росстата</label>
+          <input v-model="formData.statistics.rosstat_territorial_code" />
+        </div>
       </div>
     </div>
 
     <div class="form-actions">
-      <button class="save-btn">Сохранить</button>
-      <button class="reset-btn" @click="resetForm">Сбросить</button>
+      <button type="submit" class="save-btn" :disabled="loading">{{ loading ? "Сохранение..." : "Сохранить" }}</button>
+      <button type="button" class="reset-btn" @click="resetForm">Сбросить</button>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: 'OrganizationForm',
   data() {
     return {
+      loading: false,
       formData: {
-        organizationType: 'Юридическое лицо',
-        shortName: '',
-        fullName: '',
-        inn: '',
-        kpp: '',
-        ogrn: '',
-        regDate: '',
-        registr: '',
-        legalAddress: '',
-        actualAddress: '',
-        phone: '',
-        email: '',
+        organization: {
+          type_id: 1,
+          short_name: '',
+          full_name: '',
+          inn: '',
+          kpp: '',
+          ogrn: '',
+          registration_date: '',
+          registration_authority: '',
+          legal_address: '',
+          actual_address: '',
+          phone: '',
+          email: '',
+        },
         divisions: [''],
-        banks: [{ bank: '', account: '' }],
-        tax: [{ code: '', name: '', fullName: '', oktmo: '', okato: '' }],
-        pfr: [{ regNumber: '', code: '', name: '' }],
-        fss: [{ regNumber: '', code: '', name: '' }],
-        statistics: [{ okopf: '', okfs: '', okved: '', okpo: '', rosstatCode: '' }]
+        bank: {
+          bank: '',
+          checking_account: ''
+        },
+        taxOffice: {
+          tax_office_code: '',
+          name_tax_office: '',
+          full_name_tax_office: '',
+          oktmo: '',
+          okato: ''
+        },
+        pfr: {
+          registration_number_pfr: '',
+          territorial_code_pfr: '',
+          territorial_name_pfr: ''
+        },
+        fss: {
+          registration_number_fss: '',
+          subordination_code: '',
+          territorial_name_fss: ''
+        },
+        statistics: {
+          okopf: '',
+          okfs: '',
+          okved: '',
+          okpo: '',
+          rosstat_territorial_code: ''
+        }
       }
     }
   },
   methods: {
+    ...mapActions({
+      submitOrganizationData: "organization/sendOrganizationData",
+    }),
     addDivision() {
       this.formData.divisions.push('')
     },
     removeDivision(index) {
       this.formData.divisions.splice(index, 1)
     },
-    addBank() {
-      this.formData.banks.push({ bank: '', account: '' })
+    prepareDataForBackend() {
+      return {
+        organization: {
+          ...this.formData.organization,
+          bank: this.formData.bank.bank,
+          checking_account: this.formData.bank.checking_account,
+          tax_office_code: this.formData.taxOffice.tax_office_code,
+          name_tax_office: this.formData.taxOffice.name_tax_office,
+          full_name_tax_office: this.formData.taxOffice.full_name_tax_office,
+          oktmo: this.formData.taxOffice.oktmo,
+          okato: this.formData.taxOffice.okato,
+          registration_number_pfr: this.formData.pfr.registration_number_pfr,
+          territorial_code_pfr: this.formData.pfr.territorial_code_pfr,
+          territorial_name_pfr: this.formData.pfr.territorial_name_pfr,
+          registration_number_fss: this.formData.fss.registration_number_fss,
+          subordination_code: this.formData.fss.subordination_code,
+          territorial_name_fss: this.formData.fss.territorial_name_fss,
+          okopf: this.formData.statistics.okopf,
+          okfs: this.formData.statistics.okfs,
+          okved: this.formData.statistics.okved,
+          okpo: this.formData.statistics.okpo,
+          rosstat_territorial_code: this.formData.statistics.rosstat_territorial_code,
+        },
+        divisions: this.formData.divisions.filter(d => d && d.trim())
+      };
     },
-    removeBank(index) {
-      this.formData.banks.splice(index, 1)
-    },
-    addTax() {
-      this.formData.tax.push({ code: '', name: '', fullName: '', oktmo: '', okato: '' })
-    },
-    removeTax(index) {
-      this.formData.tax.splice(index, 1)
-    },
-    addPfr() {
-      this.formData.pfr.push({ regNumber: '', code: '', name: '' })
-    },
-    removePfr(index) {
-      this.formData.pfr.splice(index, 1)
-    },
-    addFss() {
-      this.formData.fss.push({ regNumber: '', code: '', name: '' })
-    },
-    removeFss(index) {
-      this.formData.fss.splice(index, 1)
-    },
-    addStatistics() {
-      this.formData.statistics.push({ okopf: '', okfs: '', okved: '', okpo: '', rosstatCode: '' })
-    },
-    removeStatistics(index) {
-      this.formData.statistics.splice(index, 1)
+    
+    async sendForm() {
+      this.loading = true;
+      const dataToSend = this.prepareDataForBackend();
+      const success = await this.submitOrganizationData(dataToSend);
+      this.loading = false;
+      
+      if (success) {
+        this.resetForm();
+      }
     },
     resetForm() {
       this.formData = {
-        organizationType: 'Юридическое лицо',
-        shortName: '',
-        fullName: '',
-        inn: '',
-        kpp: '',
-        ogrn: '',
-        regDate: '',
-        registr: '',
-        legalAddress: '',
-        actualAddress: '',
-        phone: '',
-        email: '',
+        organization: {
+          type_id: 1,
+          short_name: '',
+          full_name: '',
+          inn: '',
+          kpp: '',
+          ogrn: '',
+          registration_date: '',
+          registration_authority: '',
+          legal_address: '',
+          actual_address: '',
+          phone: '',
+          email: '',
+        },
         divisions: [''],
-        banks: [{ bank: '', account: '' }],
-        tax: [{ code: '', name: '', fullName: '', oktmo: '', okato: '' }],
-        pfr: [{ regNumber: '', code: '', name: '' }],
-        fss: [{ regNumber: '', code: '', name: '' }],
-        statistics: [{ okopf: '', okfs: '', okved: '', okpo: '', rosstatCode: '' }]
+        bank: { bank: '', checking_account: '' },
+        taxOffice: { tax_office_code: '', name_tax_office: '', full_name_tax_office: '', oktmo: '', okato: '' },
+        pfr: { registration_number_pfr: '', territorial_code_pfr: '', territorial_name_pfr: '' },
+        fss: { registration_number_fss: '', subordination_code: '', territorial_name_fss: '' },
+        statistics: { okopf: '', okfs: '', okved: '', okpo: '', rosstat_territorial_code: '' }
       }
     }
   }
@@ -436,6 +481,11 @@ export default {
   color: white;
   font-weight: 600;
   cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .reset-btn {
