@@ -4,6 +4,9 @@ import auth from "./auth";
 import generator from "./generator"
 import organization from "./organization";
 import counterparty from "./counterparty";
+import contract from "./contract";
+import employee from "./employee";
+import employeeContract from "./employeeContract";
 
 export default createStore({
   state: {},
@@ -15,6 +18,9 @@ export default createStore({
     // user: user,
     generator: generator,
     organization: organization,
-    counterparty: counterparty
+    counterparty: counterparty,
+    contract: contract,
+    employee: employee,
+    employeeContract: employeeContract
   },
 });

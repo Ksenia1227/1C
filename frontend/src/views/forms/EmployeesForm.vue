@@ -1,168 +1,194 @@
 <template>
-  <div class="dynamic-form">
+  <form @submit.prevent="sendForm" class="dynamic-form">
     <div class="form-section">
       <h3>Сотрудники</h3>
       <div class="employees-list">
         <div v-for="(employee, idx) in formData.employees" :key="idx" class="employee-card">
           <div class="card-header">
             <span>Сотрудник {{ idx + 1 }}</span>
-            <button class="remove-btn" @click="removeEmployee(idx)">✕</button>
+            <button type="button" class="remove-btn" @click="removeEmployee(idx)">✕</button>
           </div>
           <div class="form-grid">
             <div class="form-field full-width">
               <label>ФИО</label>
-              <input v-model="employee[0]" type="text" />
+              <div style="display: flex; gap: 8px;">
+                <input v-model="employee.last_name" placeholder="Фамилия" type="text" style="flex: 1;" />
+                <input v-model="employee.name" placeholder="Имя" type="text" style="flex: 1;" />
+                <input v-model="employee.middle_name" placeholder="Отчество" type="text" style="flex: 1;" />
+              </div>
             </div>
             <div class="form-field">
               <label>Пол</label>
-              <select v-model="employee[1]">
-                <option>Мужской</option>
-                <option>Женский</option>
+              <select v-model="employee.gender">
+                <option value="Мужской">Мужской</option>
+                <option value="Женский">Женский</option>
               </select>
             </div>
             <div class="form-field">
               <label>Дата рождения</label>
-              <input v-model="employee[2]" type="date" />
+              <input v-model="employee.date_of_birth" type="date" />
             </div>
             <div class="form-field">
               <label>ИНН</label>
-              <input v-model="employee[3]" type="text" autocomplete="off"/>
+              <input v-model="employee.inn" type="text" autocomplete="off"/>
             </div>
             <div class="form-field">
               <label>СНИЛС</label>
-              <input v-model="employee[4]" type="text" autocomplete="off"/>
+              <input v-model="employee.snils" type="text" autocomplete="off"/>
             </div>
             <div class="form-field">
               <label>Гражданство</label>
-              <input v-model="employee[5]" type="text" />
+              <input v-model="employee.citizenship" type="text" />
             </div>
             <div class="form-field">
               <label>Паспорт</label>
-              <input v-model="employee[6]" type="text" autocomplete="off"/>
+              <input v-model="employee.passport" type="text" autocomplete="off"/>
             </div>
             <div class="form-field">
               <label>Кем выдан</label>
-              <input v-model="employee[7]" type="text" />
+              <input v-model="employee.issued_by" type="text" />
             </div>
             <div class="form-field">
               <label>Дата выдачи</label>
-              <input v-model="employee[8]" type="date" />
+              <input v-model="employee.date_issue" type="date" />
             </div>
             <div class="form-field full-width">
               <label>Адрес по прописке</label>
-              <input v-model="employee[9]" type="text" />
+              <input v-model="employee.residence_address" type="text" />
             </div>
             <div class="form-field">
               <label>Телефон</label>
-              <input v-model="employee[10]" type="tel" />
+              <input v-model="employee.phone" type="tel" />
             </div>
             <div class="form-field">
               <label>Email</label>
-              <input v-model="employee[11]" type="email" />
+              <input v-model="employee.email" type="email" />
             </div>
           </div>
         </div>
-        <button class="add-btn" @click="addEmployee">+ Добавить сотрудника</button>
-      </div>
-    </div>
-
-    <div class="form-section">
-      <h3>Договоры с сотрудниками</h3>
-      <div class="contracts-list">
-        <div v-for="(contract, idx) in formData.contracts" :key="idx" class="contract-card">
-          <div class="card-header">
-            <span>Договор {{ idx + 1 }}</span>
-            <button class="remove-btn" @click="removeContract(idx)">✕</button>
-          </div>
-          <div class="form-grid">
-            <div class="form-field">
-              <label>Номер</label>
-              <input v-model.number="contract[0]" type="number" />
-            </div>
-            <div class="form-field">
-              <label>Дата приема на работу</label>
-              <input v-model="contract[1]" type="date" />
-            </div>
-            <div class="form-field">
-              <label>Подразделение</label>
-              <select v-model="contract[2]">
-                <option>Растениеводство</option>
-                <option>Животноводство</option>
-                <option>Механизация</option>
-                <option>Бухгалтерия</option>
-                <option>Администрация</option>
-                <option>Ветеринарная служба</option>
-                <option>Агрономическая служба</option>
-                <option>ИТ-отдел</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label>Должность</label>
-              <input v-model="contract[3]" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Оклад, ₽</label>
-              <input v-model.number="contract[4]" type="number" />
-            </div>
-            <div class="form-field">
-              <label>Ставка</label>
-              <input v-model="contract[5]" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Вид занятости</label>
-              <select v-model="contract[6]">
-                <option>Основное место работы</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label>Тип документа</label>
-              <select v-model="contract[7]">
-                <option>Прием на работу</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <button class="add-btn" @click="addContract">+ Добавить договор</button>
+        <button type="button" class="add-btn" @click="addEmployee">+ Добавить сотрудника</button>
       </div>
     </div>
 
     <div class="form-actions">
-      <button class="save-btn">Сохранить</button>
-      <button class="reset-btn">Сбросить</button>
+      <button type="submit" class="save-btn" :disabled="loading">
+        {{ loading ? "Сохранение..." : "Сохранить" }}
+      </button>
+      <button type="button" class="reset-btn" @click="resetForm">
+        Сбросить
+      </button>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
-  name: 'EmployeesForm',
+  name: "EmployeesForm",
   data() {
     return {
+      loading: false,
+      tempIdCounter: 0,
       formData: {
-        employees: [
-          ['', '', '', '', '', '', '', '', '', '', '', '']
-        ],
-        contracts: [
-          [null, '', '', '', null, '', '', '']
-        ]
-      }
-    }
+        employees: [],
+      },
+    };
+  },
+  computed: {
+    ...mapState("employee", {
+      storeEmployees: (state) => state.employees,
+      storeLoading: (state) => state.loading,
+    }),
+  },
+  async mounted() {
+    await this.loadData();
   },
   methods: {
+    ...mapActions("employee", ["fetchEmployees", "saveEmployee"]),
+
+    generateTempId() {
+      return `temp_${Date.now()}_${++this.tempIdCounter}`;
+    },
+
+    async loadData() {
+      this.loading = true;
+
+      await this.fetchEmployees();
+
+      if (this.storeEmployees && Array.isArray(this.storeEmployees)) {
+        this.formData.employees = this.storeEmployees.map((e) => {
+          return {
+            ...e,
+            tempId: this.generateTempId(),
+          };
+        });
+      } else {
+        this.formData.employees = [];
+      }
+
+      this.loading = false;
+    },
+
     addEmployee() {
-      this.formData.employees.push(['', '', '', '', '', '', '', '', '', '', '', ''])
+      this.formData.employees.push({
+        tempId: this.generateTempId(),
+        last_name: "",
+        name: "",
+        middle_name: "",
+        gender: "",
+        date_of_birth: "",
+        inn: "",
+        snils: "",
+        citizenship: "",
+        passport: "",
+        issued_by: "",
+        date_issue: "",
+        residence_address: "",
+        phone: "",
+        email: "",
+      });
     },
+
     removeEmployee(index) {
-      this.formData.employees.splice(index, 1)
+      if (confirm("Вы уверены, что хотите удалить этого сотрудника?")) {
+        this.formData.employees.splice(index, 1);
+      }
     },
-    addContract() {
-      this.formData.contracts.push([null, '', '', '', null, '', '', ''])
+
+    async sendForm() {
+      this.loading = true;
+
+      for (let i = 0; i < this.formData.employees.length; i++) {
+        const employee = this.formData.employees[i];
+
+        if (!employee.last_name && !employee.name && !employee.employee_id) {
+          console.log(`Сотрудник ${i + 1} не имеет ФИО, пропускаем`);
+          continue;
+        }
+
+        const cleanData = {};
+        for (const key in employee) {
+          if (key !== 'tempId') {
+            cleanData[key] = employee[key];
+          }
+        }
+        
+        await this.saveEmployee(cleanData);
+      }
+
+      this.loading = false;
+      await this.loadData();
+      alert("Данные сохранены");
     },
-    removeContract(index) {
-      this.formData.contracts.splice(index, 1)
-    }
-  }
-}
+
+    resetForm() {
+      if (confirm("Вы уверены, что хотите сбросить все изменения?")) {
+        this.loadData();
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -214,8 +240,7 @@ export default {
   color: #000;
 }
 
-.employee-card,
-.contract-card {
+.employee-card {
   background: rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   padding: 20px;
@@ -275,6 +300,11 @@ export default {
   color: white;
   font-weight: 600;
   cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .reset-btn {

@@ -89,57 +89,6 @@
       </div>
     </div>
 
-    <div class="form-section">
-      <h3>Структура посевных площадей</h3>
-      <div class="posev-list">
-        <div v-for="(posev, idx) in formData.posev" :key="idx" class="posev-card">
-          <div class="card-header">
-            <span>Посев {{ idx + 1 }}</span>
-            <button class="remove-btn" @click="removePosev(idx)">✕</button>
-          </div>
-          <div class="form-grid">
-            <div class="form-field full-width">
-              <label>Наименование</label>
-              <input v-model="posev.name" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Год</label>
-              <input v-model.number="posev.year" type="number" />
-            </div>
-            <div class="form-field">
-              <label>Поле</label>
-              <input v-model="posev.field" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Подразделение</label>
-              <input v-model="posev.division" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Культура</label>
-              <input v-model="posev.crop" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Площадь поля, га</label>
-              <input v-model.number="posev.area" type="number" step="0.01" />
-            </div>
-            <div class="form-field">
-              <label>Год</label>
-              <input v-model="posev.year1" type="number" />
-            </div>
-            <div class="form-field">
-              <label>Состав почв</label>
-              <input v-model="posev.soil" type="text" />
-            </div>
-            <div class="form-field full-width">
-              <label>Рекомендации по удобрениям</label>
-              <input v-model="posev.fertilizers" type="text"/>
-            </div>
-          </div>
-        </div>
-        <button class="add-btn" @click="addPosev">+ Добавить запись</button>
-      </div>
-    </div>
-
     <div class="form-actions">
       <button class="save-btn">Сохранить</button>
       <button class="reset-btn">Сбросить</button>
@@ -161,12 +110,6 @@ export default {
         ],
         cropTable: [
           { name: '', group: '' }
-        ],
-        posev: [
-          { 
-            name: '', year: null, field: '', division: '', 
-            crop: '', area: null, year1: null, soil: '', fertilizers: '' 
-          }
         ]
       }
     }
@@ -189,15 +132,6 @@ export default {
     },
     removeCropTable(index) {
       this.formData.cropTable.splice(index, 1)
-    },
-    addPosev() {
-      this.formData.posev.push({ 
-        name: '', year: null, field: '', division: '', 
-        crop: '', area: null, year1: null, soil: '', fertilizers: '' 
-      })
-    },
-    removePosev(index) {
-      this.formData.posev.splice(index, 1)
     }
   }
 }

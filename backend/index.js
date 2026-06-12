@@ -4,7 +4,7 @@ require ('dotenv').config()
 const cors = require('cors')
 app.use(express.json())
 // app.use(express.urlencoded({ extended: true }))
-app.use(cors({ origin: ["http://localhost:8081"] }));
+app.use(cors({ origin: ["http://localhost:8080"] }));
 const port = process.env.PORT
 
 app.use((req, res, next) => {

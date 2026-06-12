@@ -40,12 +40,24 @@
             <ContractorsForm />
           </div>
 
+          <div v-else-if="currentMainButton === 'contract'">
+            <ContractCon />
+          </div>
+
           <div v-else-if="currentMainButton === 'employees'">
             <EmployeesForm />
           </div>
 
+          <div v-else-if="currentMainButton === 'contractEmp'">
+            <ContractEmp />
+          </div>
+
           <div v-else-if="currentMainButton === 'crop'">
             <CropForm />
+          </div>
+
+          <div v-else-if="currentMainButton === 'cropPosev'">
+            <CropFormPosev />
           </div>
 
           <div v-else-if="currentMainButton === 'livestock'">
@@ -818,9 +830,12 @@ import OrganizationForm from "./forms/OrganizationForm.vue";
 import ContractorsForm from "./forms/ContractorsForm.vue";
 import EmployeesForm from "./forms/EmployeesForm.vue";
 import CropForm from "./forms/CropForm.vue";
+import CropFormPosev from "./forms/CropFormPosev.vue";
 import LivestockForm from "./forms/LivestockForm.vue";
 import BuildingsForm from "./forms/BuildingsForm.vue";
 import MachineryForm from "./forms/MachineryForm.vue";
+import ContractCon from "./forms/ContractCon.vue";
+import ContractEmp from "./forms/ContractEmp.vue";
 
 export default {
   name: "DataEntryView",
@@ -828,8 +843,11 @@ export default {
   components: {
     OrganizationForm,
     ContractorsForm,
+    ContractCon,
     EmployeesForm,
+    ContractEmp,
     CropForm,
+    CropFormPosev,
     LivestockForm,
     BuildingsForm,
     MachineryForm,
@@ -850,9 +868,12 @@ export default {
       taskTexts: {
         organization:
           "заполнить основные сведения (организация, подразделения, банки, налоговая, ПФР, ФСС, статистика)",
-        contractors: "заполнить сведения о контрагентах и договорах",
-        employees: "заполнить сведения о сотрудниках и договорах",
-        crop: "заполнить информацию о полях, культурах и структуре посевных площадей",
+        contractors: "заполнить сведения о контрагентах",
+        contract: "заполнить сведения о договорах с контрагентами",
+        employees: "заполнить сведения о сотрудниках",
+        contractEmp: "заполнить сведения о договорах с сотрудниками",
+        crop: "заполнить информацию о полях и культурах",
+        cropPosev: "заполнить информацию о структуре посевных площадей",
         livestock: "заполнить данные о поголовье и животных",
         buildings: "заполнить сведения о зданиях и сооружениях",
         machinery: "заполнить данные машинно-тракторного парка",
@@ -877,8 +898,11 @@ export default {
       return [
         "organization",
         "contractors",
+        "contract",
         "employees",
+        "contractEmp",
         "crop",
+        "cropPosev",
         "livestock",
         "buildings",
         "machinery",
@@ -912,7 +936,14 @@ export default {
         return (
           this.currentMainButton === "organization" ||
           this.currentMainButton === "contractors" ||
-          this.currentMainButton === "employees"
+          this.currentMainButton === "contract" ||
+          this.currentMainButton === "employees" ||
+          this.currentMainButton === "contractEmp"
+        );
+      } else if (buttonId === "crop") {
+        return (
+          this.currentMainButton === "crop" ||
+          this.currentMainButton === "cropPosev"
         );
       }
       return this.currentMainButton === buttonId;

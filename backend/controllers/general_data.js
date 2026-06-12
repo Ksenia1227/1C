@@ -4,11 +4,11 @@ const { Division } = require('../models/division');
 const { Counterparty } = require('../models/counterparty');
 const { Employee } = require('../models/employee');
 const { ContractCounterparty  } = require('../models/contract_counterparty');
-const { Contract_employee } = require('../models/contract_employee');
-const { Entity_type} = require('../models/entity_type');
+const { ContractEmployee } = require('../models/contract_employee');
+const { EntityType} = require('../models/entity_type');
 const { Account } = require('../models/account');
 const { Position } = require('../models/position');
-const { Nomenclature_type } = require('../models/nomenclature_type');
+const { NomenclatureType } = require('../models/nomenclature_type');
 const { Nomenclature } = require('../models/nomenclature');
 const { Unit } = require('../models/unit');
 
@@ -306,7 +306,7 @@ exports.updateContractCounterparty= async (req, res) => {
 // ---- ContractEmployee ----
 exports.getContractEmployee = async (req, res) => {
     try {
-        const contracts = await Contract_employee.findAll({ where: { uid: req.userUid } });
+        const contracts = await ContractEmployee.findAll({ where: { uid: req.userUid } });
         return res.json(contracts);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -315,7 +315,7 @@ exports.getContractEmployee = async (req, res) => {
 
 exports.addContractEmployee = async (req, res) => {
     try {
-        const newContract = await Contract_employee.create({
+        const newContract = await ContractEmployee.create({
             code: req.body.code,
             hire_date: req.body.hire_date,
             department_id: req.body.department_id,
@@ -335,7 +335,7 @@ exports.addContractEmployee = async (req, res) => {
 
 exports.updateContractEmployee = async (req, res) => {
     try {
-        const c_employee = await Contract_employee.findOne({ where: {contract_id: req.body.contract_id, uid: req.userUid } });
+        const c_employee = await ContractEmployee.findOne({ where: {contract_id: req.body.contract_id, uid: req.userUid } });
         if (!c_employee) return res.status(404).json({ message: 'Договор не найден' });
         await c_employee.update({ 
            code: req.body.code,
@@ -401,7 +401,7 @@ exports.updateNomenclature = async (req, res) => {
 // Справочники  
 exports.getEntity_type = async (req, res) => {
     try {
-        const entity_type = await Entity_type.findAll();
+        const entity_type = await EntityType.findAll();
         return res.json(entity_type);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -428,7 +428,7 @@ exports.getAccount = async (req, res) => {
 
 exports.getNomenclature_type = async (req, res) => {
     try {
-        const nomenclature_type = await Nomenclature_type.findAll();
+        const nomenclature_type = await NomenclatureType.findAll();
         return res.json(nomenclature_type);
     } catch (error) {
         return res.status(500).json({ message: error.message });
