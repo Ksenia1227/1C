@@ -72,7 +72,6 @@ export default {
   font-weight: 600;
 }
  
-/* Стили для кнопки входа/выхода (крайний правый элемент) */
 .auth-actions {
   z-index: 1001;
   margin-left: auto;

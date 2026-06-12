@@ -7,7 +7,7 @@ const ContractCounterparty = sequelize.define('contract_counterparty', {
         autoIncrement: true,
         primaryKey: true
     },
-    contract_type_id: DataTypes.BIGINT,
+    contract_type_id: DataTypes.STRING,
     name: DataTypes.TEXT,
     date: DataTypes.DATEONLY,
     validity_period: DataTypes.TEXT,
@@ -19,7 +19,7 @@ const ContractCounterparty = sequelize.define('contract_counterparty', {
         type: DataTypes.UUID,
         allowNull: false,
         references: { model: 'users', key: 'uid' }
-    }
+    }  
 }, {
     tableName: 'contract_counterparty',
     timestamps: true

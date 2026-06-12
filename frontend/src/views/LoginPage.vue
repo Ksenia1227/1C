@@ -2,19 +2,23 @@
   <div class="login-container">
     <form class="login-form" @submit.prevent="go_login">
       <h2>Вход</h2>
-      <input
-        v-model="email"
-        class="input-field"
-        placeholder="Имя пользователя"
-        required
-      />
-      <input
-        type="password"
-        v-model="password"
-        class="input-field"
-        placeholder="Пароль"
-        required
-      />
+      <div class="form-field">
+        <input
+          v-model="email"
+          class="input-field"
+          placeholder="Имя пользователя"
+          required
+        />
+      </div>
+      <div class="form-field">
+        <input
+          type="password"
+          v-model="password"
+          class="input-field"
+          placeholder="Пароль"
+          required
+        />
+      </div>
       <button type="submit" class="login-button">Войти</button>
     </form>
     <p class="register-text">
@@ -70,70 +74,107 @@ export default {
 }
 
 h2 {
-  margin-bottom: 24px;
-  color: var(--color-text);
+  margin: 0 0 24px 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(156, 39, 176, 0.2);
+  color: #9c27b0;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
   font-family: var(--font-main);
+}
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #000000;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .input-field {
   width: 100%;
   padding: 10px 12px;
-  margin: 10px 0;
-  border-radius: 6px;
-  border: 1px solid var(--color-input);
-  background-color: var(--color-card);
-  font-family: var(--font-main);
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   font-size: 16px;
-  color: var(--color-text);
-  transition: border-color 0.3s, box-shadow 0.3s;
+  color: #000;
+  font-family: var(--font-main);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .input-field:focus {
   outline: none;
-  border-color: var(--color-sth);
-  box-shadow: 0 0 6px var(--color-sth);
-  background-color: var(--color-card);
+  border-color: #9c27b0;
+  box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
 }
 
-input::placeholder {
-  /* color: var(--color-text); */
-  /* color: rgba(187, 225, 250, 0.6); */
-  color: var(--color-placeholder);
-  font-family: var(--font-main);
+.input-field::placeholder {
+  color: #999;
+  font-size: 14px;
 }
 
 .login-button {
   width: 100%;
-  padding: 10px 24px;
-  background-color: var(--color-buttndis);
-  color: var(--color-text);
-  font-family: var(--font-main);
+  padding: 12px 24px;
+  background: #9c27b0;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  color: white;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 10px;
+  font-family: var(--font-main);
+  transition: all 0.2s ease;
+  margin-top: 8px;
 }
 
 .login-button:hover {
-  background: var(--color-buttn);
+  background: #7b1fa2;
+  transform: translateY(-1px);
+}
+
+.login-button:active {
+  transform: translateY(0);
 }
 
 .register-text {
   margin-top: 20px;
-  color: var(--color-text);
+  text-align: center;
+  color: #000;
   font-family: var(--font-main);
 }
 
 .register-text a {
-  color: var(--color-buttn);
-  text-decoration: underline;
+  color: #9c27b0;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
+  transition: color 0.2s ease;
 }
 
 .register-text a:hover {
+  color: #7b1fa2;
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .login-form {
+    margin: 20px;
+    padding: 24px;
+  }
+  
+  h2 {
+    font-size: 20px;
+  }
+  
+  .input-field {
+    font-size: 14px;
+  }
 }
 </style>

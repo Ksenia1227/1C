@@ -46,13 +46,17 @@ const isAuth = computed(() => store.state.auth.isAuth)
 
 h1 {
   margin-bottom: 1rem;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  color: #000;
 }
 
 h2 {
   font-size: clamp(1rem, 3vw, 1.2rem);
-  margin-bottom: 1rem;
-  font-weight: 500;
+  margin-bottom: 2rem;
+  font-weight: 400;
+  color: #555;
+  line-height: 1.5;
 }
 
 .highlight-name {
@@ -60,24 +64,30 @@ h2 {
 }
 
 button {
-  padding: 10px 24px;
-  background-color: var(--color-buttndis);
-  color: var(--color-text);
+  padding: 12px 32px;
+  background: #9c27b0;
+  color: white;
   font-family: var(--font-main);
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
 }
 
 button:hover {
-  background-color: var(--color-buttn);
+  background: #7b1fa2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
 }
 
 @media (max-width: 768px) {
   .container {
     align-items: center; 
     padding-right: 0; 
+    text-align: center;
   }
 
   .content {
@@ -85,8 +95,17 @@ button:hover {
     max-width: 90%; 
   }
 
-  .bottom-left-image {
-    width: clamp(150px, 60%, 750px); 
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  h2 {
+    font-size: 1rem;
+  }
+
+  .button {
+    padding: 10px 24px;
+    font-size: 14px;
   }
 }
 </style>

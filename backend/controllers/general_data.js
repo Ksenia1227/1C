@@ -3,7 +3,7 @@ const { Organization } = require('../models/organization')
 const { Division } = require('../models/division');
 const { Counterparty } = require('../models/counterparty');
 const { Employee } = require('../models/employee');
-const { Contract_counterparty } = require('../models/contract_counterparty');
+const { ContractCounterparty  } = require('../models/contract_counterparty');
 const { Contract_employee } = require('../models/contract_employee');
 const { Entity_type} = require('../models/entity_type');
 const { Account } = require('../models/account');
@@ -264,7 +264,7 @@ exports.updateEmployee= async (req, res) => {
 // ---- ContractCounterparty ----
 exports.getContractCounterparty = async (req, res) => {
     try {
-        const contracts = await Contract_counterparty.findAll({ where: { uid: req.userUid } });
+        const contracts = await ContractCounterparty.findAll({ where: { uid: req.userUid } });
         return res.json(contracts);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -273,7 +273,7 @@ exports.getContractCounterparty = async (req, res) => {
 
 exports.addContractCounterparty = async (req, res) => {
     try {
-        const newContract = await Contract_counterparty.create({
+        const newContract = await ContractCounterparty.create({
             contract_type_id: req.body.contract_type_id,
             name: req.body.name,
             date: req.body.date,
@@ -289,7 +289,7 @@ exports.addContractCounterparty = async (req, res) => {
 
 exports.updateContractCounterparty= async (req, res) => {
     try {
-        const c_counterparty = await Contract_counterparty.findOne({ where: {contract_id: req.body.contract_id, uid: req.userUid } });
+        const c_counterparty = await ContractCounterparty.findOne({ where: {contract_id: req.body.contract_id, uid: req.userUid } });
         if (!c_counterparty) return res.status(404).json({ message: 'Договор не найден' });
         await c_counterparty.update({ 
            contract_type_id: req.body.contract_type_id,

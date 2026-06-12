@@ -199,7 +199,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: 'OrganizationForm',
@@ -253,15 +253,89 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState('organization', ['organizationData', 'divisions']),
+  },
+  async mounted() {
+    await this.loadData();
+  },
   methods: {
     ...mapActions({
-      submitOrganizationData: "organization/sendOrganizationData",
+      fetchOrganizationData: "organization/fetchOrganizationData",
+      fetchDivisions: "organization/fetchDivisions",
+      saveOrganizationData: "organization/saveOrganizationData",
     }),
+    async loadData() {
+      this.loading = true;
+      
+      const orgData = await this.fetchOrganizationData();
+      if (orgData) {
+        this.formData.organization = {
+          type_id: orgData.type_id || 1,
+          short_name: orgData.short_name || '',
+          full_name: orgData.full_name || '',
+          inn: orgData.inn || '',
+          kpp: orgData.kpp || '',
+          ogrn: orgData.ogrn || '',
+          registration_date: orgData.registration_date || '',
+          registration_authority: orgData.registration_authority || '',
+          legal_address: orgData.legal_address || '',
+          actual_address: orgData.actual_address || '',
+          phone: orgData.phone || '',
+          email: orgData.email || '',
+        };
+        
+        this.formData.bank = {
+          bank: orgData.bank || '',
+          checking_account: orgData.checking_account || ''
+        };
+        
+        this.formData.taxOffice = {
+          tax_office_code: orgData.tax_office_code || '',
+          name_tax_office: orgData.name_tax_office || '',
+          full_name_tax_office: orgData.full_name_tax_office || '',
+          oktmo: orgData.oktmo || '',
+          okato: orgData.okato || ''
+        };
+        
+        this.formData.pfr = {
+          registration_number_pfr: orgData.registration_number_pfr || '',
+          territorial_code_pfr: orgData.territorial_code_pfr || '',
+          territorial_name_pfr: orgData.territorial_name_pfr || ''
+        };
+
+        this.formData.fss = {
+          registration_number_fss: orgData.registration_number_fss || '',
+          subordination_code: orgData.subordination_code || '',
+          territorial_name_fss: orgData.territorial_name_fss || ''
+        };
+        
+        this.formData.statistics = {
+          okopf: orgData.okopf || '',
+          okfs: orgData.okfs || '',
+          okved: orgData.okved || '',
+          okpo: orgData.okpo || '',
+          rosstat_territorial_code: orgData.rosstat_territorial_code || ''
+        };
+      }
+      
+      const divisionsData = await this.fetchDivisions();
+      if (divisionsData && divisionsData.length > 0) {
+        this.formData.divisions = divisionsData.map(d => d.name);
+      } else {
+        this.formData.divisions = [''];
+      }
+      
+      this.loading = false;
+    },
     addDivision() {
       this.formData.divisions.push('')
     },
     removeDivision(index) {
       this.formData.divisions.splice(index, 1)
+       if (this.formData.divisions.length === 0) {
+        this.formData.divisions = ['']
+      }
     },
     prepareDataForBackend() {
       return {
@@ -293,35 +367,16 @@ export default {
     async sendForm() {
       this.loading = true;
       const dataToSend = this.prepareDataForBackend();
-      const success = await this.submitOrganizationData(dataToSend);
+      const success = await this.saveOrganizationData(dataToSend);
       this.loading = false;
       
       if (success) {
-        this.resetForm();
+        await this.loadData(); 
       }
     },
     resetForm() {
-      this.formData = {
-        organization: {
-          type_id: 1,
-          short_name: '',
-          full_name: '',
-          inn: '',
-          kpp: '',
-          ogrn: '',
-          registration_date: '',
-          registration_authority: '',
-          legal_address: '',
-          actual_address: '',
-          phone: '',
-          email: '',
-        },
-        divisions: [''],
-        bank: { bank: '', checking_account: '' },
-        taxOffice: { tax_office_code: '', name_tax_office: '', full_name_tax_office: '', oktmo: '', okato: '' },
-        pfr: { registration_number_pfr: '', territorial_code_pfr: '', territorial_name_pfr: '' },
-        fss: { registration_number_fss: '', subordination_code: '', territorial_name_fss: '' },
-        statistics: { okopf: '', okfs: '', okved: '', okpo: '', rosstat_territorial_code: '' }
+      if (confirm('Вы уверены, что хотите сбросить все изменения?')) {
+        this.loadData(); // Просто перезагружаем данные из БД
       }
     }
   }

@@ -7,6 +7,9 @@ const checkStatuses = (status) => {
     case 400:
       window.alert("Пароль должен содержать минимум 8 символов, включая латинские буквы, цифры и спецсимволы @$!%*?&");
       return false;
+    case 401:  
+      window.alert("Неверный пароль или логин");
+      return false;
     case 403:
       window.alert("Пользователь не авторизован");
       return false;
