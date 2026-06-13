@@ -1,12 +1,12 @@
 <template>
-  <div class="dynamic-form">
+  <form @submit.prevent="sendForm" class="dynamic-form">
     <div class="form-section">
       <h3>Структура посевных площадей</h3>
       <div class="posev-list">
-        <div v-for="(posev, idx) in formData.posev" :key="idx" class="posev-card">
+        <div v-for="(posev, idx) in formData.structures" :key="idx" class="posev-card">
           <div class="card-header">
             <span>Посев {{ idx + 1 }}</span>
-            <button class="remove-btn" @click="removePosev(idx)">✕</button>
+            <button type="button" class="remove-btn" @click="removeStructure(idx)">✕</button>
           </div>
           <div class="form-grid">
             <div class="form-field full-width">
@@ -19,72 +19,187 @@
             </div>
             <div class="form-field">
               <label>Поле</label>
-              <input v-model="posev.field" type="text" />
+              <select v-model="posev.field_id">
+                <option :value="null">Выберите поле</option>
+                <option 
+                  v-for="field in fields" 
+                  :key="field.field_id"
+                  :value="field.field_id"
+                >
+                  {{ field.name }} 
+                </option>
+              </select>
             </div>
             <div class="form-field">
               <label>Подразделение</label>
-              <input v-model="posev.division" type="text" />
+              <select v-model="posev.department_id">
+                <option :value="null">Выберите подразделение</option>
+                <option 
+                  v-for="division in divisions" 
+                  :key="division.division_id"
+                  :value="division.division_id"
+                >
+                  {{ division.name }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
               <label>Культура</label>
-              <input v-model="posev.crop" type="text" />
+              <select v-model="posev.crop_id">
+                <option :value="null">Выберите культуру</option>
+                <option 
+                  v-for="crop in crops" 
+                  :key="crop.crop_id"
+                  :value="crop.crop_id"
+                >
+                  {{ crop.name }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
-              <label>Площадь поля, га</label>
-              <input v-model.number="posev.area" type="number" step="0.01" />
-            </div>
-            <div class="form-field">
-              <label>Год</label>
-              <input v-model="posev.year1" type="number" />
-            </div>
-            <div class="form-field">
-              <label>Состав почв</label>
-              <input v-model="posev.soil" type="text" />
-            </div>
-            <div class="form-field full-width">
-              <label>Рекомендации по удобрениям</label>
-              <input v-model="posev.fertilizers" type="text"/>
+              <label>Группа</label>
+              <input v-model="posev.group" type="text" placeholder="Группа" />
             </div>
           </div>
         </div>
-        <button class="add-btn" @click="addPosev">+ Добавить запись</button>
+        <button type="button" class="add-btn" @click="addStructure">+ Добавить запись</button>
       </div>
     </div>
 
     <div class="form-actions">
-      <button class="save-btn">Сохранить</button>
-      <button class="reset-btn">Сбросить</button>
+      <button type="submit" class="save-btn" :disabled="loading">
+        {{ loading ? "Сохранение..." : "Сохранить" }}
+      </button>
+      <button type="button" class="reset-btn" @click="resetForm">
+        Сбросить
+      </button>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
-  name: 'CropForm',
+  name: "CropStructureForm",
   data() {
     return {
+      loading: false,
+      tempIdCounter: 0,
       formData: {
-        posev: [
-          { 
-            name: '', year: null, field: '', division: '', 
-            crop: '', area: null, year1: null, soil: '', fertilizers: '' 
-          }
-        ]
-      }
-    }
+        structures: [],
+      },
+    };
+  },
+  computed: {
+    ...mapState("structure", {
+      storeStructures: (state) => state.structures,
+      storeFields: (state) => state.fields,
+      storeCrops: (state) => state.crops,
+      storeDivisions: (state) => state.divisions,
+      storeLoading: (state) => state.loading,
+    }),
+    fields() {
+      return this.storeFields || [];
+    },
+    crops() {
+      return this.storeCrops || [];
+    },
+    divisions() {
+      return this.storeDivisions || [];
+    },
+  },
+  async mounted() {
+    await this.loadData();
   },
   methods: {
-    addPosev() {
-      this.formData.posev.push({ 
-        name: '', year: null, field: '', division: '', 
-        crop: '', area: null, year1: null, soil: '', fertilizers: '' 
-      })
+    ...mapActions("structure", [
+      "fetchStructures", 
+      "saveStructure",
+      "fetchFieldsForStructure",
+      "fetchCropsForStructure",
+      "fetchDivisionsForStructure"
+    ]),
+
+    generateTempId() {
+      return `temp_${Date.now()}_${++this.tempIdCounter}`;
     },
-    removePosev(index) {
-      this.formData.posev.splice(index, 1)
-    }
-  }
-}
+
+    async loadData() {
+      this.loading = true;
+
+      await Promise.all([
+        this.fetchStructures(),
+        this.fetchFieldsForStructure(),
+        this.fetchCropsForStructure(),
+        this.fetchDivisionsForStructure()
+      ]);
+
+      if (this.storeStructures && Array.isArray(this.storeStructures) && this.storeStructures.length > 0) {
+        this.formData.structures = this.storeStructures.map((s) => {
+          return {
+            ...s,
+            tempId: this.generateTempId(),
+          };
+        });
+      } else {
+        this.formData.structures = [];
+      }
+
+      this.loading = false;
+    },
+
+    addStructure() {
+      this.formData.structures.push({
+        tempId: this.generateTempId(),
+        name: "",
+        year: null,
+        field_id: null,
+        department_id: null,
+        crop_id: null,
+        group: ""
+      });
+    },
+
+    removeStructure(index) {
+      if (confirm("Вы уверены, что хотите удалить эту запись?")) {
+        this.formData.structures.splice(index, 1);
+      }
+    },
+
+    async sendForm() {
+      this.loading = true;
+
+      for (let i = 0; i < this.formData.structures.length; i++) {
+        const structure = this.formData.structures[i];
+
+        if (!structure.name && !structure.structure_acreage_id) {
+          console.log(`Запись ${i + 1} не имеет названия, пропускаем`);
+          continue;
+        }
+
+        const cleanData = {};
+        for (const key in structure) {
+          if (key !== 'tempId') {
+            cleanData[key] = structure[key];
+          }
+        }
+        
+        await this.saveStructure(cleanData);
+      }
+
+      this.loading = false;
+      await this.loadData();
+      alert("Данные сохранены");
+    },
+
+    resetForm() {
+      if (confirm("Вы уверены, что хотите сбросить все изменения?")) {
+        this.loadData();
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -127,7 +242,8 @@ export default {
 }
 
 .form-field input,
-.form-field select {
+.form-field select,
+.form-field textarea {
   width: 100%;
   padding: 8px 12px;
   background: white;
@@ -136,10 +252,12 @@ export default {
   color: #000;
 }
 
-.field-card,
-.culture-card,
-.posev-card,
-.crop-table-card {
+.form-field textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.posev-card {
   background: rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   padding: 20px;
@@ -200,6 +318,11 @@ export default {
   color: white;
   font-weight: 600;
   cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .reset-btn {

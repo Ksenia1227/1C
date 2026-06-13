@@ -1,114 +1,182 @@
 <template>
-  <div class="dynamic-form">
-    <div class="form-section">
-      <h3>Поголовье по группам</h3>
-      <div class="summary-block">
-        <div class="summary-grid">
-          <div v-for="(group, idx) in summaryGroups" :key="idx" class="summary-item">
-            <label>{{ group.name }}</label>
-            <input 
-              v-model.number="group.count" 
-              type="number" 
-              min="0" 
-              step="1"
-              class="summary-input"
-              @input="updateSummary"
-            />
-            <span>голов</span>
-          </div>
-        </div>
-        <div class="summary-total">
-          <strong>Итого голов:</strong> {{ totalAnimals }}
-        </div>
-      </div>
-    </div>
-
+  <form @submit.prevent="sendForm" class="dynamic-form">
     <div class="form-section">
       <h3>Животные</h3>
       <div class="animals-list">
-        <div v-for="(animal, idx) in formData.animals" :key="idx" class="animal-card">
+        <div
+          v-for="(animal, idx) in formData.animals"
+          :key="idx"
+          class="animal-card"
+        >
           <div class="card-header">
             <span>Животное {{ idx + 1 }}</span>
-            <button class="remove-btn" @click="removeAnimal(idx)">✕</button>
+            <button type="button" class="remove-btn" @click="removeAnimal(idx)">
+              ✕
+            </button>
           </div>
           <div class="form-grid">
             <div class="form-field">
               <label>Инвентарный номер</label>
-              <input v-model="animal[0]" type="text" />
+              <input v-model="animal.inventory_number" type="text" />
             </div>
             <div class="form-field">
               <label>Пол</label>
-              <select v-model="animal[1]">
-                <option>Бычок</option>
-                <option>Телка</option>
-                <option>Корова</option>
-                <option>Корова (нетель)</option>
+              <select v-model="animal.gender">
+                <option value="">Выберите пол</option>
+                <option value="Бычок">Бычок</option>
+                <option value="Телка">Телка</option>
+                <option value="Корова">Корова</option>
+                <option value="Корова (нетель)">Корова (нетель)</option>
+                <option value="Бык">Бык</option>
               </select>
             </div>
             <div class="form-field">
               <label>Дата рождения</label>
-              <input v-model="animal[2]" type="date" />
+              <input v-model="animal.birth_date" type="date" />
             </div>
             <div class="form-field">
               <label>Порода</label>
-              <input v-model="animal[3]" type="text" />
+              <input v-model="animal.breed" type="text" />
             </div>
             <div class="form-field">
               <label>Группа</label>
-              <input v-model="animal[4]" type="text" />
+              <select v-model="animal.group_id">
+                <option :value="1">Бычок до 1 года</option>
+                <option :value="2">Бычки старше одного года</option>
+                <option :value="3">Бычок новорожденный</option>
+                <option :value="4">Телки до 1 года</option>
+                <option :value="5">Нетели</option>
+                <option :value="6">Сухостойная корова</option>
+                <option :value="7">Дойная корова</option>
+                <option :value="8">Телки новорожденные</option>
+              </select>
             </div>
           </div>
         </div>
-        <button class="add-btn" @click="addAnimal">+ Добавить животное</button>
+        <button type="button" class="add-btn" @click="addAnimal">
+          + Добавить животное
+        </button>
       </div>
     </div>
 
     <div class="form-actions">
-      <button class="save-btn">Сохранить</button>
-      <button class="reset-btn">Сбросить</button>
+      <button type="submit" class="save-btn" :disabled="loading">
+        {{ loading ? "Сохранение..." : "Сохранить" }}
+      </button>
+      <button type="button" class="reset-btn" @click="resetForm">
+        Сбросить
+      </button>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
-  name: 'LivestockForm',
+  name: "LivestockForm",
   data() {
     return {
+      loading: false,
+      tempIdCounter: 0,
       formData: {
-        animals: [
-          ['', '', '', '', '']
-        ]
+        animals: [],
       },
-      summaryGroups: [
-        { name: 'Дойные коровы', key: 'doynye', count: 1 },
-        { name: 'Сухостойные коровы', key: 'suhostoynye', count: 2 },
-        { name: 'Нетели (стельные)', key: 'neteli', count: 1 },
-        { name: 'Бычки старше 1 года', key: 'bychki_star', count: 3 },
-        { name: 'Телки до 1 года', key: 'telki_do', count: 2 },
-        { name: 'Бычки до 1 года', key: 'bychki_do', count: 3 },
-        { name: 'Телки новорожденные (0–2 мес)', key: 'telki_nov', count: 2 },
-        { name: 'Бычки новорожденные (0–2 мес)', key: 'bychki_nov', count: 1 }
-      ]
-    }
+    };
   },
   computed: {
-    totalAnimals() {
-      return this.summaryGroups.reduce((sum, group) => sum + (group.count || 0), 0)
-    }
+    ...mapState("livestock", {
+      storeAnimals: (state) => state.animals,
+      storeLoading: (state) => state.loading,
+    }),
+  },
+  async mounted() {
+    await this.loadData();
   },
   methods: {
+    ...mapActions("livestock", [
+      "fetchAnimals",
+      "saveAnimal",
+    ]),
+
+    generateTempId() {
+      return `temp_${Date.now()}_${++this.tempIdCounter}`;
+    },
+
+    async loadData() {
+      this.loading = true;
+
+      await this.fetchAnimals();
+
+      if (
+        this.storeAnimals &&
+        Array.isArray(this.storeAnimals) &&
+        this.storeAnimals.length > 0
+      ) {
+        this.formData.animals = this.storeAnimals.map((a) => {
+          return {
+            ...a,
+            tempId: this.generateTempId(),
+          };
+        });
+      } else {
+        this.formData.animals = [];
+      }
+
+      this.loading = false;
+    },
+
     addAnimal() {
-      this.formData.animals.push(['', '', '', '', ''])
+      this.formData.animals.push({
+        tempId: this.generateTempId(),
+        inventory_number: "",
+        gender: "",
+        birth_date: "",
+        breed: "",
+      });
     },
+
     removeAnimal(index) {
-      this.formData.animals.splice(index, 1)
+      if (confirm("Вы уверены, что хотите удалить это животное?")) {
+        this.formData.animals.splice(index, 1);
+      }
     },
-    updateSummary() {
-      console.log('Summary updated:', this.summaryGroups)
-    }
-  }
-}
+
+    async sendForm() {
+      this.loading = true;
+
+      for (let i = 0; i < this.formData.animals.length; i++) {
+        const animal = this.formData.animals[i];
+
+        if (!animal.inventory_number && !animal.animal_id) {
+          console.log(
+            `Животное ${i + 1} не имеет инвентарного номера, пропускаем`,
+          );
+          continue;
+        }
+
+        const cleanData = {};
+        for (const key in animal) {
+          if (key !== "tempId") {
+            cleanData[key] = animal[key];
+          }
+        }
+
+        await this.saveAnimal(cleanData);
+      }
+
+      this.loading = false;
+      await this.loadData();
+      alert("Данные сохранены");
+    },
+
+    resetForm() {
+      if (confirm("Вы уверены, что хотите сбросить все изменения?")) {
+        this.loadData();
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -200,63 +268,6 @@ export default {
   margin-top: 8px;
 }
 
-.summary-block {
-  background: rgba(156, 39, 176, 0.08);
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid rgba(156, 39, 176, 0.2);
-}
-
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.summary-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-}
-
-.summary-item label {
-  flex: 1;
-  font-weight: 500;
-  color: #000;
-  margin: 0;
-}
-
-.summary-input {
-  width: 80px;
-  padding: 6px 10px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 14px;
-}
-
-.summary-item span {
-  color: #666;
-  font-size: 14px;
-}
-
-.summary-total {
-  padding-top: 16px;
-  border-top: 1px solid rgba(156, 39, 176, 0.2);
-  text-align: right;
-  font-size: 16px;
-}
-
-.summary-total strong {
-  color: #9c27b0;
-  font-size: 18px;
-}
-
 .form-actions {
   display: flex;
   gap: 16px;
@@ -274,6 +285,11 @@ export default {
   color: white;
   font-weight: 600;
   cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .reset-btn {
@@ -295,15 +311,6 @@ export default {
   }
   .form-field label {
     font-weight: 600;
-  }
-  .summary-grid {
-    grid-template-columns: 1fr;
-  }
-  .summary-item {
-    flex-wrap: wrap;
-  }
-  .summary-item label {
-    width: 100%;
   }
 }
 </style>

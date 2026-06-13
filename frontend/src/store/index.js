@@ -9,6 +9,9 @@ import employee from "./employee";
 import employeeContract from "./employeeContract";
 import building from "./building";
 import fixedAsset from "./fixedAsset";
+import crop from "./crop";
+import structure from "./structure";
+import livestock from "./livestock";
 
 export default createStore({
   state: {},
@@ -25,6 +28,9 @@ export default createStore({
     employee: employee,
     employeeContract: employeeContract,
     building: building,
-    fixedAsset: fixedAsset
+    fixedAsset: fixedAsset,
+    crop: crop,
+    structure: structure,
+    livestock: livestock
   },
 });

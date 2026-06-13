@@ -8,12 +8,7 @@ const GroupCulture = sequelize.define('group_culture', {
         autoIncrement: true,
         primaryKey: true
     },
-    name: { type: DataTypes.TEXT, allowNull: false },
-    uid: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: { model: 'users', key: 'uid' }
-    }
+    name: { type: DataTypes.TEXT, allowNull: false }
 }, {
     tableName: 'group_culture',
     timestamps: true
