@@ -1,5 +1,6 @@
 const { user } = require('../models/user')
 const { Building } = require('../models/building')
+const { FixedAsset } = require('../models/asset')
 
 //  Building 
 exports.getBuilding = async (req, res) => {
@@ -20,7 +21,7 @@ exports.addBuilding = async (req, res) => {
             cost: req.body.cost,
             uid: req.userUid
         });
-        return res.status(201).json({ message: 'Building added successfully', building: newRecord });
+        return res.status(201).json({ message: 'Building added successfully', building: building  });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -30,7 +31,7 @@ exports.updateBuilding = async (req, res) => {
     try {
         const building = await Building.findOne({ where: { building_id: req.body.building_id, uid: req.userUid } });
         if (!building) return res.status(404).json({ message: 'Building not found' });
-        await record.update({
+        await building.update({
             name: req.body.name,
             purpose: req.body.purpose,
             area: req.body.area,
@@ -97,7 +98,7 @@ exports.updateFixedAsset = async (req, res) => {
             commissioning_date: req.body.commissioning_date,
             decommissioning_date: req.body.decommissioning_date
         });
-        return res.json({ message: 'Fixed asset updated successfully', fixedAsset: record });
+        return res.json({ message: 'Fixed asset updated successfully', fixedAsset: fixedAsset });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

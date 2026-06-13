@@ -7,6 +7,8 @@ import counterparty from "./counterparty";
 import contract from "./contract";
 import employee from "./employee";
 import employeeContract from "./employeeContract";
+import building from "./building";
+import fixedAsset from "./fixedAsset";
 
 export default createStore({
   state: {},
@@ -21,6 +23,8 @@ export default createStore({
     counterparty: counterparty,
     contract: contract,
     employee: employee,
-    employeeContract: employeeContract
+    employeeContract: employeeContract,
+    building: building,
+    fixedAsset: fixedAsset
   },
 });

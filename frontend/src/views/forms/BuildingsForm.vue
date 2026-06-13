@@ -1,64 +1,145 @@
 <template>
-  <div class="dynamic-form">
+  <form @submit.prevent="sendForm" class="dynamic-form">
     <div class="form-section">
       <h3>Здания и сооружения</h3>
       <div class="buildings-list">
-        <div v-for="(building, idx) in formData.buildings" :key="idx" class="building-card">
+        <div v-for="(building, idx) in formData.buildings" :key="building.tempId || idx" class="building-card">
           <div class="card-header">
             <span>Здание {{ idx + 1 }}</span>
-            <button class="remove-btn" @click="removeBuilding(idx)">✕</button>
+            <button type="button" class="remove-btn" @click="removeBuilding(idx)">✕</button>
           </div>
           <div class="form-grid">
             <div class="form-field full-width">
               <label>Наименование</label>
-              <input v-model="building[0]" type="text" />
+              <input v-model="building.name" type="text" />
             </div>
             <div class="form-field full-width">
               <label>Назначение</label>
-              <textarea v-model="building[1]" rows="2" ></textarea>
+              <textarea v-model="building.purpose" rows="2"></textarea>
             </div>
             <div class="form-field">
               <label>Площадь, м²</label>
-              <input v-model.number="building[2]" type="number" step="1" />
+              <input v-model.number="building.area" type="number" step="1" />
             </div>
             <div class="form-field">
               <label>Стоимость, млн ₽</label>
-              <input v-model.number="building[3]" type="number" step="0.1" />
+              <input v-model.number="building.cost" type="number" step="0.1" />
             </div>
           </div>
         </div>
-        <button class="add-btn" @click="addBuilding">+ Добавить здание</button>
+        <button type="button" class="add-btn" @click="addBuilding">+ Добавить здание</button>
       </div>
     </div>
 
     <div class="form-actions">
-      <button class="save-btn">Сохранить</button>
-      <button class="reset-btn">Сбросить</button>
+      <button type="submit" class="save-btn" :disabled="loading">
+        {{ loading ? "Сохранение..." : "Сохранить" }}
+      </button>
+      <button type="button" class="reset-btn" @click="resetForm">
+        Сбросить
+      </button>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
-  name: 'BuildingsForm',
+  name: "BuildingsForm",
   data() {
     return {
+      loading: false,
+      tempIdCounter: 0,
       formData: {
-        buildings: [
-          ['', '', null, null]
-        ]
-      }
-    }
+        buildings: [],
+      },
+    };
+  },
+  computed: {
+    ...mapState("building", {
+      storeBuildings: (state) => state.buildings,
+      storeLoading: (state) => state.loading,
+    }),
+  },
+  async mounted() {
+    await this.loadData();
   },
   methods: {
-    addBuilding() {
-      this.formData.buildings.push(['', '', null, null])
+    ...mapActions("building", ["fetchBuildings", "saveBuilding"]),
+
+    generateTempId() {
+      return `temp_${Date.now()}_${++this.tempIdCounter}`;
     },
+
+    async loadData() {
+      this.loading = true;
+
+      await this.fetchBuildings();
+
+      if (this.storeBuildings && Array.isArray(this.storeBuildings) && this.storeBuildings.length > 0) {
+        this.formData.buildings = this.storeBuildings.map((b) => {
+          return {
+            ...b,
+            tempId: this.generateTempId(),
+          };
+        });
+      } else {
+        this.formData.buildings = [];
+      }
+
+      this.loading = false;
+    },
+
+    addBuilding() {
+      this.formData.buildings.push({
+        tempId: this.generateTempId(),
+        name: "",
+        purpose: "",
+        area: null,
+        cost: null,
+      });
+    },
+
     removeBuilding(index) {
-      this.formData.buildings.splice(index, 1)
-    }
-  }
-}
+      if (confirm("Вы уверены, что хотите удалить это здание?")) {
+        this.formData.buildings.splice(index, 1);
+      }
+    },
+
+    async sendForm() {
+      this.loading = true;
+
+      for (let i = 0; i < this.formData.buildings.length; i++) {
+        const building = this.formData.buildings[i];
+
+        if (!building.name && !building.building_id) {
+          console.log(`Здание ${i + 1} не имеет названия, пропускаем`);
+          continue;
+        }
+
+        const cleanData = {};
+        for (const key in building) {
+          if (key !== 'tempId') {
+            cleanData[key] = building[key];
+          }
+        }
+        
+        await this.saveBuilding(cleanData);
+      }
+
+      this.loading = false;
+      await this.loadData();
+      alert("Данные сохранены");
+    },
+
+    resetForm() {
+      if (confirm("Вы уверены, что хотите сбросить все изменения?")) {
+        this.loadData();
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -177,6 +258,11 @@ export default {
   color: white;
   font-weight: 600;
   cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .reset-btn {

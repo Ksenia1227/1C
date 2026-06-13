@@ -135,7 +135,7 @@ app.use('/api/auth', auths_routes)
 app.use('/api/user', users_routes)
 app.use('/api/g_data', general_data_routes)
 app.use('/api/plants', plants_routes)
-// app.use('/api/building', assets_routes)
+app.use('/api/building', assets_routes)
 // app.use('/api/animal', animal_routes)
 app.use('/api/generator', generator_routes)
 

@@ -10,11 +10,6 @@ const AnimalGroup = sequelize.define('animal_group', {
     name: {
         type: DataTypes.TEXT,
         allowNull: false
-    },
-    uid: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: { model: 'users', key: 'uid' }
     }
 }, {
     tableName: 'animal_group',

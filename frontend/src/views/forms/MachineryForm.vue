@@ -1,104 +1,211 @@
 <template>
-  <div class="dynamic-form">
+  <form @submit.prevent="sendForm" class="dynamic-form">
     <div class="form-section">
       <h3>Машино-тракторный парк</h3>
       <div class="machines-list">
-        <div v-for="(machine, idx) in formData.machines" :key="idx" class="machine-card">
+        <div v-for="(machine, idx) in formData.assets" :key="idx" class="machine-card">
           <div class="card-header">
             <span>Новая единица техники {{ idx + 1 }}</span>
-            <button class="remove-btn" @click="removeMachine(idx)">✕</button>
+            <button type="button" class="remove-btn" @click="removeAsset(idx)">✕</button>
           </div>
           <div class="form-grid">
             <div class="form-field full-width">
               <label>Наименование</label>
-              <input v-model="machine[0]" type="text" />
+              <input v-model="machine.name" type="text" />
             </div>
             <div class="form-field">
               <label>Изготовитель</label>
-              <input v-model="machine[1]" type="text" />
+              <input v-model="machine.manufacturer" type="text" />
             </div>
             <div class="form-field">
               <label>Местонахождение</label>
-              <input v-model="machine[2]" type="text" />
+              <select v-model="machine.building_id">
+                <option :value="null">Выберите сооружение</option>
+                <option 
+                  v-for="building in buildings" 
+                  :key="building.building_id"
+                  :value="building.building_id"
+                >
+                  {{ building.name }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
               <label>Марка</label>
-              <input v-model="machine[3]" type="text" />
+              <input v-model="machine.model" type="text" />
             </div>
             <div class="form-field">
               <label>Дата выпуска</label>
-              <input v-model="machine[4]" type="date" />
+              <input v-model="machine.manufacture_year" type="number" />
             </div>
             <div class="form-field">
               <label>Номер паспорта (регистрационный)</label>
-              <input v-model="machine[5]" type="text" />
+              <input v-model="machine.passport_number" type="text" />
             </div>
             <div class="form-field">
               <label>Мощность, л.с</label>
-              <input v-model.number="machine[6]" type="number" />
+              <input v-model.number="machine.power" type="number" />
             </div>
             <div class="form-field">
               <label>Номер двигателя</label>
-              <input v-model="machine[7]" type="text" />
+              <input v-model="machine.engine_number" type="text" />
             </div>
             <div class="form-field">
               <label>Заводской номер</label>
-              <input v-model="machine[8]" type="text" />
+              <input v-model="machine.serial_number" type="text" />
             </div>
             <div class="form-field">
               <label>Срок службы, мес</label>
-              <input v-model.number="machine[9]" type="number" />
+              <input v-model.number="machine.service_life" type="number" />
             </div>
             <div class="form-field">
               <label>Первоначальная стоимость</label>
-              <input v-model.number="machine[10]" type="number" step="0.01" />
+              <input v-model.number="machine.initial_cost" type="number" step="0.01" />
             </div>
             <div class="form-field">
               <label>Дата покупки</label>
-              <input v-model="machine[11]" type="date" />
+              <input v-model="machine.purchase_date" type="date" />
             </div>
             <div class="form-field">
               <label>Дата ввода в эксплуатацию</label>
-              <input v-model="machine[12]" type="date" />
+              <input v-model="machine.commissioning_date" type="date" />
             </div>
             <div class="form-field">
               <label>Дата снятия с учета</label>
-              <input v-model="machine[13]" type="text" />
+              <input v-model="machine.decommissioning_date" type="date" />
             </div>
           </div>
         </div>
-        <button class="add-btn" @click="addMachine">+ Добавить единицу техники</button>
+        <button type="button" class="add-btn" @click="addAsset">+ Добавить единицу техники</button>
       </div>
     </div>
 
     <div class="form-actions">
-      <button class="save-btn">Сохранить</button>
-      <button class="reset-btn">Сбросить</button>
+      <button type="submit" class="save-btn" :disabled="loading">
+        {{ loading ? "Сохранение..." : "Сохранить" }}
+      </button>
+      <button type="button" class="reset-btn" @click="resetForm">
+        Сбросить
+      </button>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
-  name: 'MachineryForm',
+  name: "MachineryForm",
   data() {
     return {
+      loading: false,
+      tempIdCounter: 0,
       formData: {
-        machines: [
-          ['', '', '', '', '', '', null, '', '', null, null, '', '', '']
-        ]
-      }
-    }
+        assets: [],
+      },
+    };
+  },
+  computed: {
+    ...mapState("fixedAsset", {
+      storeAssets: (state) => state.assets,
+      storeLoading: (state) => state.loading,
+    }),
+    ...mapState("building", {
+      storeBuildings: (state) => state.buildings,
+    }),
+    buildings() {
+      return this.storeBuildings || [];
+    },
+  },
+  async mounted() {
+    await this.loadData();
   },
   methods: {
-    addMachine() {
-      this.formData.machines.push(['', '', '', '', '', '', null, '', '', null, null, '', '', ''])
+    ...mapActions("fixedAsset", ["fetchAssets", "saveAsset"]),
+    ...mapActions("building", ["fetchBuildings"]),
+
+    generateTempId() {
+      return `temp_${Date.now()}_${++this.tempIdCounter}`;
     },
-    removeMachine(index) {
-      this.formData.machines.splice(index, 1)
-    }
-  }
-}
+
+    async loadData() {
+      this.loading = true;
+
+      await Promise.all([this.fetchAssets(), this.fetchBuildings()]);
+
+      if (this.storeAssets && Array.isArray(this.storeAssets) && this.storeAssets.length > 0) {
+        this.formData.assets = this.storeAssets.map((a) => {
+          return {
+            ...a,
+            tempId: this.generateTempId(),
+          };
+        });
+      } else {
+        this.formData.assets = [];
+      }
+
+      this.loading = false;
+    },
+
+    addAsset() {
+      this.formData.assets.push({
+        tempId: this.generateTempId(),
+        name: "",
+        manufacturer: "",
+        building_id: null,
+        model: "",
+        manufacture_year: null,
+        passport_number: "",
+        power: null,
+        engine_number: "",
+        serial_number: "",
+        service_life: null,
+        initial_cost: null,
+        purchase_date: "",
+        commissioning_date: "",
+        decommissioning_date: "",
+      });
+    },
+
+    removeAsset(index) {
+      if (confirm("Вы уверены, что хотите удалить эту единицу техники?")) {
+        this.formData.assets.splice(index, 1);
+      }
+    },
+
+    async sendForm() {
+      this.loading = true;
+
+      for (let i = 0; i < this.formData.assets.length; i++) {
+        const asset = this.formData.assets[i];
+
+        if (!asset.name && !asset.fixed_asset_id) {
+          console.log(`Техника ${i + 1} не имеет названия, пропускаем`);
+          continue;
+        }
+
+        const cleanData = {};
+        for (const key in asset) {
+          if (key !== 'tempId') {
+            cleanData[key] = asset[key];
+          }
+        }
+        
+        await this.saveAsset(cleanData);
+      }
+
+      this.loading = false;
+      await this.loadData();
+      alert("Данные сохранены");
+    },
+
+    resetForm() {
+      if (confirm("Вы уверены, что хотите сбросить все изменения?")) {
+        this.loadData();
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -140,7 +247,8 @@ export default {
   font-weight: normal;
 }
 
-.form-field input {
+.form-field input,
+.form-field select {
   width: 100%;
   padding: 8px 12px;
   background: white;
@@ -210,6 +318,11 @@ export default {
   color: white;
   font-weight: 600;
   cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .reset-btn {
