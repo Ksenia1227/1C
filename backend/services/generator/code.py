@@ -2,17 +2,501 @@ import random
 import json
 from datetime import datetime, timedelta
 import os
-# from processes import ProcessesTab
 import sys
 
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
+class ProcessesProcessor:
+    
+    def __init__(self, app_data):
+        self.app = app_data
+        
+    def get_animals(self):
+        animals = []
+        for values in self.app.get("livestock_table_data", []):
+            animals.append({
+                "id": values[0],
+                "sex": values[1],
+                "birth_date": values[2],
+                "breed": values[3],
+                "group": values[4]
+            })
+        return animals
+    
+    def get_available_animals(self):
+        livestock = {}
+        for values in self.app.get("livestock_table_data", []):
+            inv = values[0]
+            livestock[inv] = {"inv": inv, "group": values[4]}
+        
+        animals = []
+        for values in self.app.get("ani_ost_table_data", []):
+            inv = values[1]
+            mass = int(values[4]) if values[4] and str(values[4]).isdigit() else 0
+            
+            if inv in livestock and mass > 0:
+                animals.append({
+                    "account": values[0],
+                    "group": livestock[inv]["group"],
+                    "inv": inv,
+                    "warehouse": values[3],
+                    "mass": mass
+                })
+        return animals
+    
+    def get_milk_animals(self):
+        livestock = {}
+        for values in self.app.get("livestock_table_data", []):
+            inv = values[0]
+            group = values[4]
+            if group == "Дойная корова":
+                livestock[inv] = {"inv": inv, "group": group}
+        
+        animals = []
+        for values in self.app.get("ani_ost_table_data", []):
+            inv = values[1]
+            if inv in livestock:
+                animals.append({
+                    "account": values[0],
+                    "group": livestock[inv]["group"],
+                    "inv": inv,
+                    "warehouse": values[3]
+                })
+        return animals
+    
+    def get_employees(self):
+        employees = []
+        emp_data = self.app.get("employee_table_data", [])
+        dog_data = self.app.get("dog_emp_table_data", [])
+        
+        for emp_values, dog_values in zip(emp_data, dog_data):
+            employees.append({
+                "fio": emp_values[0],
+                "work": dog_values[3],
+                "department": dog_values[2],
+                "salary": dog_values[4]
+            })
+        return employees
+    
+    def get_milk(self):
+        milk = []
+        for values in self.app.get("material_ost_table_data", []):
+            if values[0] == "Товарное молоко":
+                milk.append({
+                    "qty": values[3],
+                    "count": values[7]
+                })
+        return milk
+    
+    def get_tractors(self):
+        """Получение тракторов"""
+        tractors = []
+        for values in self.app.get("machine_table_data", []):
+            tractors.append({"name": values[0]})
+        return tractors
+    
+    def get_fields(self):
+        fields = []
+        for values in self.app.get("posev_table_data", []):
+            fields.append({
+                "name": values[0],
+                "area": values[5]
+            })
+        return fields
+    
+    def get_materials(self):
+        materials = []
+        for values in self.app.get("material_ost_table_data", []):
+            materials.append({"name": values[0]})
+        return materials
+    
+    def get_weight_by_status(self, status):
+        if "Телки новорожденные" in status or "Бычок новорожденный" in status:
+            return random.randint(25, 45)
+        elif "Телки до 1 года" in status or "Бычок до 1 года" in status:
+            return random.randint(80, 200)
+        elif "Бычки старше 1 года" in status:
+            return random.randint(350, 600)
+        elif "Дойная корова" in status or "Сухостойная корова" in status:
+            return random.randint(400, 700)
+        elif "Нетели" in status:
+            return random.randint(350, 550)
+        return random.randint(100, 500)
+    
+    def process_buy_animal(self):
+        data = []
+        animal_data = self.app.get("animal_data", {}).get("card", [])
+        
+        for _ in range(random.randint(12, 20)):
+            inv_number = f"КРС-{random.randint(100, 999)}"
+            ani = random.choice(animal_data) if animal_data else {"status": "Корова"}
+            weight = self.get_weight_by_status(ani.get("status", "Корова"))
+            amount = weight * random.randint(200, 350)
+            
+            data.append({
+                "Дата": self.generate_date(2025, 2026),
+                "Подразделение": "Животноводческий комплекс",
+                "Вид движения": "Оприходование",
+                "Номенклатура (группа)": ani.get("status", "Корова"),
+                "Количество голов": "1",
+                "Инвентарный номер": inv_number,
+                "Масса, кг": weight,
+                "Цена, руб": amount
+            })
+        return data
+    
+    def process_birth(self):
+        data = []
+        animals = self.get_animals()
+        employees = self.get_employees()
+        
+        mothers = [a for a in animals if "Дойная" in a.get("group", "")]
+        workers = [e for e in employees if e["work"] in ["Доярка", "Скотник"]]
+        
+        if mothers and workers:
+            for _ in range(random.randint(5, 12)):
+                mother = random.choice(mothers)
+                worker = random.choice(workers)
+                inv_number = f"КРС-{random.randint(100, 999)}"
+                product = random.choice(["Бычок новорожденный", "Телки новорожденные"])
+                sex = "Бычок" if "Бычок" in product else "Телка"
+                
+                data.append({
+                    "Дата": self.generate_date(2026, 2026),
+                    "Счёт затрат": "20.01.02",
+                    "Вид движения животных": "Приплод",
+                    "Склад": "Коровник №5 (телята новорожденные)",
+                    "Подразделение": "Животноводческий комплекс",
+                    "Продукция": product,
+                    "Инвентарный номер матери": mother["id"],
+                    "Инвентарный номер": inv_number,
+                    "Количество голов": "1",
+                    "Масса, кг": random.randint(25, 45),
+                    "Счёт учёта": "11.01",
+                    "Пол": sex,
+                    "Работник": worker["fio"]
+                })
+        return data
+    
+    def process_weight_gain(self):
+        data = []
+        animals = self.get_available_animals()
+        
+        if animals:
+            count = min(len(animals), random.randint(5, 15))
+            selected_animals = random.sample(animals, count)
+            
+            for animal in selected_animals:
+                gain = random.randint(15, 80)
+                old_mass = animal["mass"]
+                new_mass = old_mass + gain
+                
+                data.append({
+                    "Дата": self.generate_date(2026, 2026),
+                    "Счёт затрат": "20.01.02",
+                    "Подразделение": "Животноводческий комплекс",
+                    "Вид движения животных": "Привес",
+                    "Склад": animal["warehouse"],
+                    "Инвентарный номер": animal["inv"],
+                    "Количество голов": "1",
+                    "Масса, кг": new_mass,
+                    "Счёт учёта": animal["account"]
+                })
+        return data
+    
+    def process_transfer(self):
+        data = []
+        
+        group_flow = {
+            "Телки новорожденные": "Телки до 1 года",
+            "Телки до 1 года": "Нетели (стельные)",
+            "Нетели": "Коровы дойные",
+            "Бычок новорожденный": "Бычки до 1 года",
+            "Бычок до 1 года": "Бычки старше 1 года"
+        }
+        
+        building_by_group = {
+            "Телки до 1 года": ["Коровник №4"],
+            "Нетели (стельные)": ["Коровник №2"],
+            "Коровы дойные": ["Коровник №1"],
+            "Бычки до 1 года": ["Коровник №3", "Коровник №4"],
+            "Бычки старше 1 года": ["Коровник №3"]
+        }
+        
+        animals = [a for a in self.get_available_animals() if a["group"] in group_flow]
+        
+        if animals:
+            count = min(len(animals), random.randint(5, 15))
+            selected_animals = random.sample(animals, count)
+            
+            for animal in selected_animals:
+                old_group = animal["group"]
+                new_group = group_flow.get(old_group, old_group)
+                old_warehouse = animal["warehouse"]
+                new_warehouse = random.choice(building_by_group.get(new_group, [old_warehouse]))
+                
+                data.append({
+                    "Дата": self.generate_date(2026, 2026),
+                    "Склад до": old_warehouse,
+                    "Номенклатура отправитель": old_group,
+                    "Вид движения животных": "Переведено из других групп (в другие группы)",
+                    "Склад": new_warehouse,
+                    "Подразделение": "Животноводческий комплекс",
+                    "Инвентарный номер": animal["inv"],
+                    "Номенклатура получатель": new_group,
+                    "Количество голов": "1",
+                    "Масса, кг": animal["mass"]
+                })
+        return data
+    
+    def process_milk_yield(self):
+        data = []
+        animals = self.get_milk_animals()
+        
+        for ani in animals:
+            data.append({
+                "Дата": self.generate_date(2026, 2026),
+                "Счёт затрат": "20.01.02",
+                "Склад": ani["warehouse"],
+                "Количество доек": "1",
+                "Продукция": "Молоко",
+                "Инвентарный номер": ani["inv"],
+                "Количество голов": "1",
+                "Надоено молока за день, л": random.randint(20, 40)
+            })
+        return data
+    
+    def process_sale_products(self):
+        milk_data = []
+        ani_data = []
+        
+        milk = self.get_milk()
+        for i, m in enumerate(milk, 1):
+            qty = int(m["qty"]) if str(m["qty"]).isdigit() else 0
+            price = int(m["count"]) if str(m["count"]).isdigit() else 0
+            
+            milk_data.append({
+                "Дата": self.generate_date(2026, 2026),
+                "Номер": f"{i+1:05d}",
+                "Контрагент": "АО «Прикамский Молкомбинат»",
+                "Склад": "Молочный блок",
+                "Номенклатура": "Товарное молоко",
+                "Количество": qty,
+                "Ед. изм.": "л",
+                "Цена, руб/л": price,
+                "Сумма, руб": qty * price,
+                "Банковский счёт": f"{random.randint(100000000, 999999999)} УФК по Пермскому краю",
+                "Статус": random.choice(["Оплачено", "Не оплачено"])
+            })
+        
+        animals = self.get_available_animals()
+        if animals:
+            selected = random.sample(animals, min(len(animals), random.randint(2, 5)))
+            for i, animal in enumerate(selected, 1):
+                mass = int(animal["mass"])
+                price = random.randint(220, 320)
+                
+                ani_data.append({
+                    "Дата": self.generate_date(2026, 2026),
+                    "Номер": f"{i:05d}",
+                    "Контрагент": "ООО «Прикамский Мясокомбинат»",
+                    "Склад": animal["warehouse"],
+                    "Инвентарный номер": animal["inv"],
+                    "Масса": mass,
+                    "Ед. изм.": "кг",
+                    "Цена, руб/кг": price,
+                    "Сумма, руб": mass * price,
+                    "Банковский счёт": f"{random.randint(100000000, 999999999)} УФК по Пермскому краю",
+                    "Статус": random.choice(["Оплачено", "Не оплачено"])
+                })
+        
+        return {"milk_sales": milk_data, "animal_sales": ani_data}
+    
+    def process_seed_receipt(self):
+        data = []
+        products = [
+            {"name": "Хлористый калий", "contr": "ООО «Агрохимсервис»", "warehouse": "Склад удобрений", "account": "10.12.2"},
+            {"name": "Калийная соль", "contr": "ООО «Агрохимсервис»", "warehouse": "Склад удобрений", "account": "10.12.2"},
+            {"name": "Семена овса", "contr": "ООО «Семена Прикамья", "warehouse": "Зерносклад №1", "account": "10.14"},
+            {"name": "Семена пшеницы", "contr": "ООО «Семена Прикамья", "warehouse": "Зерносклад №1", "account": "10.14"},
+            {"name": "Семена кукурузы", "contr": "ООО «Зернотрейд»", "warehouse": "Зерносклад №1", "account": "10.14"},
+            {"name": "Семена ячменя", "contr": "ООО «Зернотрейд»", "warehouse": "Зерносклад №1", "account": "10.14"},
+            {"name": "Суперфосфат", "contr": "ООО «Агрохимсервис»", "warehouse": "Склад удобрений", "account": "10.12.2"}
+        ]
+        
+        for _ in range(random.randint(3, 8)):
+            prod = random.choice(products)
+            if "Семена" in prod["name"]:
+                qty = random.randint(20000, 100000)
+                price = random.randint(18, 50)
+            else:
+                qty = random.randint(30000, 90000)
+                price = random.randint(40, 90)
+            
+            data.append({
+                "Дата": self.generate_date(2026, 2026),
+                "Контагент": prod["contr"],
+                "Склад": prod["warehouse"],
+                "Вид движения": "Оприходование",
+                "Номенклатура": prod["name"],
+                "Количество, кг": qty,
+                "Цена, руб/кг": price,
+                "Сумма": qty * price,
+                "Счёт учёта": prod["account"]
+            })
+        return data
+    
+    def process_waybill(self):
+        top_data = []
+        ydob_data = []
+        
+        employees = self.get_employees()
+        tractors = self.get_tractors()
+        fields = self.get_fields()
+        
+        workers = [e for e in employees if e["work"] == "Тракторист"]
+        tractors_only = [t for t in tractors if "трактор" in t["name"].lower()]
+        
+        if workers and tractors_only and fields:
+            norms = {"Вспашка": {"fuel": 15, "seed": 0, "fertilizer": 0}}
+            norms2 = {"Внесение удобрений": {"fuel": 3.5, "seed": 0, "fertilizer": 72}, "Посев": {"fuel": 3.5, "seed": 190, "fertilizer": 0}}
+            fert_items = ["Хлористый калий", "Калийная соль", "Суперфосфат"]
+            
+            for _ in range(random.randint(2, 5)):
+                worker = random.choice(workers)
+                tractor = random.choice(tractors_only)
+                field = random.choice(fields)
+                work = random.choice(list(norms.keys()))
+                ha = random.randint(40, 360)
+                fuel = int(ha * norms[work]["fuel"])
+                
+                top_data.append({
+                    "Дата": self.generate_date(2026, 2026),
+                    "Документ": "Путевой лист",
+                    "Подразделение": "Машино-тракторный парк",
+                    "Сотрудник": worker["fio"],
+                    "Техника": tractor["name"],
+                    "Прицеп": "-",
+                    "Вид работы": work,
+                    "Структура посевных площадей": field["name"],
+                    "Единица измерения": "га",
+                    "Выработано, га": ha,
+                    "Счёт затрат": "20.01.1",
+                    "Номенклатура": "Дизельное топливо",
+                    "Количество, л": fuel
+                })
+            
+            for _ in range(random.randint(2, 5)):
+                worker = random.choice(workers)
+                tractor = random.choice(tractors_only)
+                field = random.choice(fields)
+                work2 = random.choice(list(norms2.keys()))
+                ha = random.randint(40, 360)
+                norm2 = norms2[work2]
+                fuel = int(ha * norm2["fuel"])
+                
+                if work2 == "Посев":
+                    stock = "Зерносклад №1"
+                    nomen = "Семена"
+                    material_qty = int(ha * norm2["seed"])
+                elif work2 == "Внесение удобрений":
+                    stock = "Склад удобрений"
+                    nomen = random.choice(fert_items)
+                    material_qty = int(ha * norm2["fertilizer"])
+                else:
+                    stock = "-"
+                    nomen = "-"
+                    material_qty = "-"
+                
+                ydob_data.append({
+                    "Дата": self.generate_date(2026, 2026),
+                    "Документ": "Путевой лист",
+                    "Подразделение": "Машино-тракторный парк",
+                    "Сотрудник": worker["fio"],
+                    "Техника": tractor["name"],
+                    "Прицеп": "-",
+                    "Вид работы": work2,
+                    "Структура посевных площадей": field["name"],
+                    "Единица измерения": "га",
+                    "Выработано, га": ha,
+                    "Счёт затрат": "20.01.1",
+                    "Номенклатура (топливо)": "Дизельное топливо",
+                    "Количество, л": fuel,
+                    "Склад": stock,
+                    "Номенклатура": nomen,
+                    "Количество, кг": material_qty
+                })
+        
+        return {"top_data": top_data, "ydob_data": ydob_data}
+    
+    def process_fuel_receipt(self):
+        data = []
+        products = [
+            {"name": "Фильтр топливный МТЗ-82", "contr": "ИП Сидоров В.В.", "account": "10.5"},
+            {"name": "Ремень молотилки Claas Lexion 770", "contr": "ООО «Сельхозтехника-Центр»", "account": "10.5"},
+            {"name": "Бензин АИ-92", "contr": "ООО «Нефтепродукт»", "account": "10.03.01"},
+            {"name": "Дизельное топливо", "contr": "ООО «ПермАгроГСМ»", "account": "10.03.01"},
+            {"name": "Масло моторное", "contr": "ООО «Зернотрейд»", "account": "10.03.01"}
+        ]
+        
+        employees = self.get_employees()
+        workers = [e for e in employees if e["work"] in ["Инженер-механик", "Слесарь-ремонтник", "Водитель"]]
+        
+        for _ in range(random.randint(3, 8)):
+            prod = random.choice(products)
+            if "Фильтр" in prod["name"] or "Ремень" in prod["name"]:
+                qty = random.randint(1, 20)
+                price = random.randint(400, 1000)
+            else:
+                qty = random.randint(5000, 15000)
+                price = random.randint(50, 70)
+            
+            data.append({
+                "Дата": self.generate_date(2026, 2026),
+                "Контагент": prod["contr"],
+                "Склад": "Парк техники",
+                "Вид движения": "Оприходование",
+                "Номенклатура": prod["name"],
+                "Количество": qty,
+                "Цена, руб": price,
+                "Сумма": qty * price,
+                "Счёт учёта": prod["account"],
+                "Сотрудник": random.choice(workers)["fio"] if workers else ""
+            })
+        return data
+    
+    def generate_date(self, start_year=2010, end_year=2023):
+        year = random.randint(start_year, end_year)
+        month = random.randint(1, 12)
+        day = random.randint(1, 28)
+        return f"{day:02d}.{month:02d}.{year}"
+    
+    def run_all_processes(self):
+        return {
+            "process_buy_animal": self.process_buy_animal(),
+            "process_birth": self.process_birth(),
+            "process_weight_gain": self.process_weight_gain(),
+            "process_transfer": self.process_transfer(),
+            "process_milk_yield": self.process_milk_yield(),
+            "process_sale_products": self.process_sale_products(),
+            "process_seed_receipt": self.process_seed_receipt(),
+            "process_waybill": self.process_waybill(),
+            "process_fuel_receipt": self.process_fuel_receipt()
+        }
 class GeneratorService:
     def __init__(self):
         
         # Загрузка данных из JSON файлов
         self.load_data()
+
+        self.livestock_table_data = []
+        self.ani_ost_table_data = []
+        self.employee_table_data = []
+        self.dog_emp_table_data = []
+        self.material_ost_table_data = []
+        self.machine_table_data = []
+        self.posev_table_data = []
 
     def load_data(self):
         """Загрузка данных из JSON файлов"""
@@ -327,6 +811,7 @@ class GeneratorService:
 
             used_crops = set()
             used_crop_table = set()
+            self.posev_table_data = []
 
             if self.crop_data["crops"]:
                 for field  in fields_data:
@@ -349,6 +834,17 @@ class GeneratorService:
                             fertilizers = "Сидераты (горчица, рапс)"
 
                         posev_data.append((
+                            f"{field_name} {par_type} {str(year)[-2:]}г",
+                            str(year),
+                            field_name,
+                            "Растениеводческий участок",
+                            par_type,
+                            area,
+                            year,
+                            random.choice(soils),
+                            fertilizers
+                        ))
+                        self.posev_table_data.append((
                             f"{field_name} {par_type} {str(year)[-2:]}г",
                             str(year),
                             field_name,
@@ -395,6 +891,17 @@ class GeneratorService:
                     )
 
                     posev_data.append((
+                        f"{field_name} {crop_name} {str(year)[-2:]}г",
+                        str(year),
+                        field_name,
+                        "Растениеводческий участок",
+                        crop_name,
+                        area,
+                        year,
+                        soil,
+                        fertilizers
+                    ))
+                    self.posev_table_data.append((
                         f"{field_name} {crop_name} {str(year)[-2:]}г",
                         str(year),
                         field_name,
@@ -542,6 +1049,8 @@ class GeneratorService:
 
             livestock_data = []
             ani_ost_data = []
+            self.livestock_table_data = [] 
+            self.ani_ost_table_data = []  
         
             if self.animal_data:
                 for i in range(1, random.randint(12, 20)):
@@ -570,6 +1079,14 @@ class GeneratorService:
                         status
                     ))
 
+                    self.livestock_table_data.append((
+                        inv_number,
+                        sex,
+                        birth_date,
+                        random.choice(self.animal_data["breeds"]),
+                        status
+                    ))
+
                     if status == "Дойная корова" or status == "Сухостойная корова":
                         account = "01.01"
                     else:
@@ -591,12 +1108,36 @@ class GeneratorService:
                             "",
                             1
                         ))
+                        self.ani_ost_table_data.append((
+                            account,
+                            inv_number,
+                            "Животноводческий комплекс",
+                            building,
+                            weight,
+                            amount,
+                            "",
+                            "",
+                            "",
+                            1
+                        ))
 
                     else: 
                         initial_cost = random.randint(120000, 180000)
                         start_date = datetime.now() - timedelta(days=random.randint(0, 1000))
 
                         ani_ost_data.append((
+                            account,
+                            inv_number,
+                            "Животноводческий комплекс",
+                            building,
+                            "",  
+                            "", 
+                            initial_cost,
+                            60,
+                            start_date.strftime("%d.%m.%Y"),
+                            1
+                        ))
+                        self.ani_ost_table_data.append((
                             account,
                             inv_number,
                             "Животноводческий комплекс",
@@ -659,12 +1200,29 @@ class GeneratorService:
                 random.shuffle(result)
 
                 machine_table_data = []
+                self.machine_table_data = [] 
                 
                 for i, machine in enumerate(result, 1):
                     buy_date = self.generate_date(2021, 2025)
                     manufacture_date = self.generate_date(2015, 2020)
 
                     machine_table_data.append((
+                        f"{machine['type']} {machine['model']} №{i}",
+                        machine["brand"],
+                        random.choice(locations),
+                        machine["model"],
+                        self.generate_date(2015, 2020),
+                        f"{random.randint(10000000, 99999999)}",
+                        machine["power"] if machine["power"] else "—",
+                        f"D{random.randint(10000, 99999)}",
+                        f"ЗНТ-{random.randint(1, 999):03d}",
+                        random.randint(60, 240),
+                        f"{(machine['cost'] + random.randint(-100000, 100000)):,}".replace(",", " "),
+                        buy_date,
+                        buy_date,
+                        "—"
+                    ))
+                    self.machine_table_data.append((
                         f"{machine['type']} {machine['model']} №{i}",
                         machine["brand"],
                         random.choice(locations),
@@ -696,8 +1254,20 @@ class GeneratorService:
 
                 materials_sample = random.sample(self.material_data["materials"], random.randint(5, 8))
                 materials_ost_table = []
+                self.material_ost_table_data = [] 
                 for i, material in enumerate(materials_sample, 1):
                     materials_ost_table.append((
+                        material["nomen"],
+                        material["account"],
+                        material["warehouse"],
+                        material["count"],
+                        material["ed"],
+                        f"{i:09d}",
+                        material["suplier"],
+                        material["price"],
+                        material["department"]
+                    ))
+                    self.material_ost_table_data.append((
                         material["nomen"],
                         material["account"],
                         material["warehouse"],
@@ -800,6 +1370,8 @@ class GeneratorService:
 
             employees = []
             contracts = []
+            self.employee_table_data = []   
+            self.dog_emp_table_data = [] 
             contract_id = 1
                 
             for department, positions in self.employee_data["positions"].items():
@@ -852,7 +1424,9 @@ class GeneratorService:
                             "Прием на работу"
                         )
                         employees.append(employee)
+                        self.employee_table_data.append(employee)
                         contracts.append(contract)
+                        self.dog_emp_table_data.append(contract)
                         contract_id += 1
 
             return {
@@ -865,7 +1439,7 @@ class GeneratorService:
         nomen_result = self.generate_nomenclature()
         sample = nomen_result["sample"]
 
-        return {
+        user_data =  {
             "uid": uid,
             "name": name,
             "email": email,
@@ -888,10 +1462,23 @@ class GeneratorService:
             "contractors": self.generate_contractors(),
             "employees": self.generate_employees(),
 
-            "created_at": datetime.now().isoformat()
+            "created_at": datetime.now().isoformat(),
+
+            "livestock_table_data": self.livestock_table_data,
+            "ani_ost_table_data": self.ani_ost_table_data,
+            "employee_table_data": self.employee_table_data,
+            "dog_emp_table_data": self.dog_emp_table_data,
+            "material_ost_table_data": self.material_ost_table_data,
+            "machine_table_data": self.machine_table_data,
+            "posev_table_data": self.posev_table_data,
+            "animal_data": self.animal_data
         }
     
-import sys
+        processor = ProcessesProcessor(user_data)
+        processes_result = processor.run_all_processes()
+        user_data["processes"] = processes_result
+        
+        return user_data
 
 if __name__ == "__main__":
     uid = sys.argv[1]
