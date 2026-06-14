@@ -12,6 +12,7 @@ const { NomenclatureType } = require('../models/nomenclature_type');
 const { Nomenclature } = require('../models/nomenclature');
 const { Unit } = require('../models/unit');
 const { ProductSale } = require('../models/product_sale');
+const { GoodsReceipt } = require('../models/goods_receipt');
 
 
 //  Organization
@@ -457,7 +458,7 @@ exports.getProductSale = async (req, res) => {
 
 exports.addProductSale = async (req, res) => {
     try {
-        const nomenclature = await ProductSale.create({
+        const product = await ProductSale.create({
             date:req.body.date,
             number: req.body.number,
             counterparty_id: req.body.counterparty_id,
@@ -492,6 +493,56 @@ exports.updateProductSale = async (req, res) => {
             uid: req.userUid
            });
         return res.json({ message: 'Product sale updated successfully', ProductSale: product });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+// Goods receipt
+exports.getGoodsReceipt = async (req, res) => {
+    try {
+        const goods = await GoodsReceipt.findAll({ where: { uid: req.userUid } });
+        return res.json(goods);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.addGoodsReceipt = async (req, res) => {
+    try {
+        const goods = await GoodsReceipt.create({
+            date:req.body.date,
+            counterparty_id: req.body.counterparty_id,
+            building_id: req.body.building_id,
+            movement_id:req.body.movement_id,
+            nomenclature_id:req.body.nomenclature_id,
+            quantity:req.body.quantity,
+            account_id:req.body.account_id,
+            price:req.body.price,
+            uid: req.userUid
+        });
+        return res.status(201).json({ message: 'Goods receipt added successfully', GoodsReceipt: goods });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.updateGoodsReceipt = async (req, res) => {
+    try {
+        const goods = await GoodsReceipt.findOne({ where: {goods_receipt_id: req.body.goods_receipt_id, uid: req.userUid } });
+        if (!goods) return res.status(404).json({ message: 'Goods receipt not found' });
+        await goods.update({ 
+           date:req.body.date,
+            counterparty_id: req.body.counterparty_id,
+            building_id: req.body.building_id,
+            movement_id:req.body.movement_id,
+            nomenclature_id:req.body.nomenclature_id,
+            quantity:req.body.quantity,
+            account_id:req.body.account_id,
+            price:req.body.price,
+            uid: req.userUid
+           });
+        return res.json({ message: 'Goods receipt updated successfully', GoodsReceipt: goods });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
