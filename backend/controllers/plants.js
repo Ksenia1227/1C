@@ -3,6 +3,7 @@ const { Field } = require('../models/field')
 const { GroupCulture } = require('../models/group_culture');
 const { Crop } = require('../models/crop');
 const { StructureAcreage } = require('../models/structure_acreage');
+const { BalanceCardPlant } = require('../models/balance_card_plant');
 
 // Field
 exports.getField = async (req, res) => {

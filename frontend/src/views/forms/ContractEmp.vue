@@ -3,22 +3,33 @@
     <div class="form-section">
       <h3>Договоры с сотрудниками</h3>
       <div class="contracts-list">
-        <div v-for="(contract, idx) in formData.contracts" :key="idx" class="contract-card">
+        <div
+          v-for="(contract, idx) in formData.contracts"
+          :key="idx"
+          class="contract-card"
+        >
           <div class="card-header">
             <span>Договор {{ idx + 1 }}</span>
-            <button type="button" class="remove-btn" @click="removeContract(idx)">✕</button>
+            <button
+              type="button"
+              class="remove-btn"
+              @click="removeContract(idx)"
+            >
+              ✕
+            </button>
           </div>
           <div class="form-grid">
             <div class="form-field full-width">
               <label>Сотрудник</label>
               <select v-model="contract.employee_id" required>
                 <option :value="null">Выберите сотрудника</option>
-                <option 
-                  v-for="employee in employees" 
+                <option
+                  v-for="employee in employees"
                   :key="employee.employee_id"
                   :value="employee.employee_id"
                 >
-                  {{ employee.last_name }} {{ employee.name }} {{ employee.middle_name || '' }}
+                  {{ employee.last_name }} {{ employee.name }}
+                  {{ employee.middle_name || "" }}
                 </option>
               </select>
             </div>
@@ -33,12 +44,15 @@
             <div class="form-field">
               <label>Подразделение</label>
               <select v-model="contract.department_id">
-                <option :value="1">Администрация</option>
-                <option :value="2">Животноводческий комплекс</option>
-                <option :value="3">Машино-тракторный парк</option>
-                <option :value="4">Растениеводческий участок</option>
-                <option :value="5">Складское хозяйство</option>
-            </select>
+                <option :value="null">Выберите подразделение</option>
+                <option 
+                  v-for="division in divisions" 
+                  :key="division.division_id"
+                  :value="division.division_id"
+                >
+                  {{ division.name }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
               <label>Должность</label>
@@ -65,20 +79,26 @@
                 <option :value="20">Агрохимик</option>
                 <option :value="21">Программист 1С</option>
                 <option :value="22">Системный администратор</option>
-            </select>
+              </select>
             </div>
             <div class="form-field">
               <label>Оклад, ₽</label>
-              <input v-model.number="contract.salary" type="number" step="0.01" />
+              <input
+                v-model.number="contract.salary"
+                type="number"
+                step="0.01"
+              />
             </div>
             <div class="form-field">
               <label>Ставка</label>
-              <input v-model="contract.rate" type="number" step="0.1" />
+              <input v-model.number="contract.rate" type="number" step="0.1" />
             </div>
             <div class="form-field">
               <label>Вид занятости</label>
               <select v-model="contract.employment_type">
-                <option value="Основное место работы">Основное место работы</option>
+                <option value="Основное место работы">
+                  Основное место работы
+                </option>
               </select>
             </div>
             <div class="form-field">
@@ -89,7 +109,9 @@
             </div>
           </div>
         </div>
-        <button type="button" class="add-btn" @click="addContract">+ Добавить договор</button>
+        <button type="button" class="add-btn" @click="addContract">
+          + Добавить договор
+        </button>
       </div>
     </div>
 
@@ -123,9 +145,15 @@ export default {
       storeContracts: (state) => state.contracts,
       storeLoading: (state) => state.loading,
     }),
+    ...mapState("organization", {
+      storeDivisions: (state) => state.divisions,
+    }),
     ...mapState("employee", {
       storeEmployees: (state) => state.employees,
     }),
+    divisions() {
+      return this.storeDivisions || [];
+    },
     employees() {
       return this.storeEmployees || [];
     },
@@ -134,8 +162,12 @@ export default {
     await this.loadData();
   },
   methods: {
-    ...mapActions("employeeContract", ["fetchEmployeeContracts", "saveEmployeeContract"]),
+    ...mapActions("employeeContract", [
+      "fetchEmployeeContracts",
+      "saveEmployeeContract",
+    ]),
     ...mapActions("employee", ["fetchEmployees"]),
+    ...mapActions("organization", ["fetchDivisions"]),
 
     generateTempId() {
       return `temp_${Date.now()}_${++this.tempIdCounter}`;
@@ -144,7 +176,7 @@ export default {
     async loadData() {
       this.loading = true;
 
-      await Promise.all([this.fetchEmployeeContracts(), this.fetchEmployees()]);
+      await Promise.all([this.fetchEmployeeContracts(), this.fetchDivisions(), this.fetchEmployees()]);
 
       if (this.storeContracts && Array.isArray(this.storeContracts)) {
         this.formData.contracts = this.storeContracts.map((c) => {
@@ -194,11 +226,11 @@ export default {
 
         const cleanData = {};
         for (const key in contract) {
-          if (key !== 'tempId') {
+          if (key !== "tempId") {
             cleanData[key] = contract[key];
           }
         }
-        
+
         await this.saveEmployeeContract(cleanData);
       }
 

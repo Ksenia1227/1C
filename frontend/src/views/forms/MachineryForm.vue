@@ -36,7 +36,7 @@
             </div>
             <div class="form-field">
               <label>Дата выпуска</label>
-              <input v-model="machine.manufacture_year" type="number" />
+              <input v-model.number="machine.manufacture_year" type="number" />
             </div>
             <div class="form-field">
               <label>Номер паспорта (регистрационный)</label>

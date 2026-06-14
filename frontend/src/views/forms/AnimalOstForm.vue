@@ -1,29 +1,75 @@
 <template>
-  <div class="dynamic-form">
+  <form @submit.prevent="sendForm" class="dynamic-form">
     <div class="form-section">
       <h3>Остатки животноводства</h3>
       <div class="ost-list">
-        <div v-for="(ost, idx) in formData.animalOst" :key="idx" class="ost-card">
+        <div
+          v-for="(ost, idx) in formData.balances"
+          :key="idx"
+          class="ost-card"
+        >
           <div class="card-header">
             <span>Запись {{ idx + 1 }} </span>
-            <button class="remove-btn" @click="removeAnimalOst(idx)">✕</button>
+            <button
+              type="button"
+              class="remove-btn"
+              @click="removeBalance(idx)"
+            >
+              ✕
+            </button>
           </div>
           <div class="form-grid">
             <div class="form-field">
               <label>Счет</label>
-              <input v-model="ost.account" type="text" />
+              <select v-model="ost.account_id">
+                <option :value="null">Выберите счет</option>
+                <option
+                  v-for="account in accounts"
+                  :key="account.account_id"
+                  :value="account.account_id"
+                >
+                  {{ account.code }} - {{ account.name }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
               <label>Инвентарный номер</label>
-              <input v-model="ost.inventoryNumber" type="text" />
+              <select v-model="ost.inventory_number">
+                <option :value="null">Выберите животное</option>
+                <option 
+                  v-for="animal in animals" 
+                  :key="animal.animal_id"
+                  :value="animal.inventory_number"
+                >
+                  {{ animal.inventory_number }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
               <label>Подразделение</label>
-              <input v-model="ost.division" type="text" />
+              <select v-model="ost.department_id">
+                <option :value="null">Выберите подразделение</option>
+                <option 
+                  v-for="division in divisions" 
+                  :key="division.division_id"
+                  :value="division.division_id"
+                >
+                  {{ division.name }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
               <label>Склад</label>
-              <input v-model="ost.warehouse" type="text" />
+              <select v-model="ost.building_id">
+                <option :value="null">Выберите склад</option>
+                <option
+                  v-for="building in buildings"
+                  :key="building.building_id"
+                  :value="building.building_id"
+                >
+                  {{ building.name }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
               <label>Живая масса, кг</label>
@@ -34,95 +80,170 @@
               <input v-model.number="ost.amount" type="number" step="0.01" />
             </div>
             <div class="form-field">
-              <label>Первоначальная стоимость, руб</label>
-              <input v-model.number="ost.initialCost" type="number" step="0.01" />
-            </div>
-            <div class="form-field">
-              <label>Срок полезного использования, мес</label>
-              <input v-model.number="ost.usefulLife" type="number" step="1" />
-            </div>
-            <div class="form-field">
-              <label>Дата принятия к учету</label>
-              <input v-model="ost.acceptanceDate" type="date" />
-            </div>
-            <div class="form-field">
               <label>Количество голов</label>
-              <input v-model.number="ost.quantity" type="number" step="1" />
+              <input v-model.number="ost.number_heads" type="number" step="1" />
             </div>
           </div>
         </div>
-        <button class="add-btn" @click="addAnimalOst">+ Добавить запись</button>
+        <button type="button" class="add-btn" @click="addBalance">
+          + Добавить запись
+        </button>
       </div>
     </div>
 
     <div class="form-actions">
-      <button class="save-btn">Сохранить</button>
-      <button class="reset-btn" @click="resetForm">Сбросить</button>
+      <button type="submit" class="save-btn" :disabled="loading">
+        {{ loading ? "Сохранение..." : "Сохранить" }}
+      </button>
+      <button type="button" class="reset-btn" @click="resetForm">
+        Сбросить
+      </button>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
-  name: 'AnimalOstForm',
+  name: "AnimalBalanceForm",
   data() {
     return {
+      loading: false,
+      tempIdCounter: 0,
       formData: {
-        animalOst: [
-          {
-            account: '',
-            inventoryNumber: '',
-            division: '',
-            warehouse: '',
-            weight: null,
-            amount: null,
-            initialCost: null,
-            usefulLife: null,
-            acceptanceDate: '',
-            quantity: null
-          }
-        ]
-      }
-    }
+        balances: [],
+      },
+    };
+  },
+  computed: {
+    ...mapState("animalBalance", {
+      storeBalances: (state) => state.balances,
+      storeAccounts: (state) => state.accounts,
+      storeLoading: (state) => state.loading,
+    }),
+    ...mapState("building", {
+      storeBuildings: (state) => state.buildings,
+    }),
+    ...mapState("organization", {
+      storeDivisions: (state) => state.divisions,
+    }),
+    ...mapState("livestock", {
+      storeAnimals: (state) => state.animals,
+    }),
+    accounts() {
+      return this.storeAccounts || [];
+    },
+    animals() {
+      return this.storeAnimals || [];
+    },
+    buildings() {
+      return this.storeBuildings || [];
+    },
+    divisions() {
+      return this.storeDivisions || [];
+    },
+  },
+  async mounted() {
+    await this.loadData();
   },
   methods: {
-    addAnimalOst() {
-      this.formData.animalOst.push({
-        account: '',
-        inventoryNumber: '',
-        division: '',
-        warehouse: '',
+    ...mapActions("animalBalance", [
+      "fetchBalances",
+      "saveBalance",
+      "fetchAccounts"
+    ]),
+    ...mapActions("building", ["fetchBuildings"]),
+    ...mapActions("organization", ["fetchDivisions"]),
+    ...mapActions("livestock", ["fetchAnimals"]),
+
+    generateTempId() {
+      return `temp_${Date.now()}_${++this.tempIdCounter}`;
+    },
+
+    async loadData() {
+      this.loading = true;
+
+      await Promise.all([
+        this.fetchBalances(),
+        this.fetchAccounts(),
+        this.fetchBuildings(),
+        this.fetchDivisions(),
+        this.fetchAnimals()
+      ]);
+
+      if (
+        this.storeBalances &&
+        Array.isArray(this.storeBalances) &&
+        this.storeBalances.length > 0
+      ) {
+        this.formData.balances = this.storeBalances.map((b) => {
+          return {
+            ...b,
+            tempId: this.generateTempId(),
+          };
+        });
+      } else {
+        this.formData.balances = [];
+      }
+
+      this.loading = false;
+    },
+
+    addBalance() {
+      this.formData.balances.push({
+        tempId: this.generateTempId(),
+        account_id: null,
+        inventory_number: "",
+        department_id: null,
+        building_id: null,
         weight: null,
         amount: null,
-        initialCost: null,
-        usefulLife: null,
-        acceptanceDate: '',
-        quantity: null
-      })
+        number_heads: null,
+      });
     },
-    removeAnimalOst(index) {
-      this.formData.animalOst.splice(index, 1)
-    },
-    resetForm() {
-      this.formData = {
-        animalOst: [
-          {
-            account: '',
-            inventoryNumber: '',
-            division: '',
-            warehouse: '',
-            weight: null,
-            amount: null,
-            initialCost: null,
-            usefulLife: null,
-            acceptanceDate: '',
-            quantity: null
-          }
-        ]
+
+    removeBalance(index) {
+      if (confirm("Вы уверены, что хотите удалить эту запись?")) {
+        this.formData.balances.splice(index, 1);
       }
-    }
-  }
-}
+    },
+
+    async sendForm() {
+      this.loading = true;
+
+      for (let i = 0; i < this.formData.balances.length; i++) {
+        const balance = this.formData.balances[i];
+
+        if (!balance.inventory_number && !balance.balance_id) {
+          console.log(
+            `Запись ${i + 1} не имеет инвентарного номера, пропускаем`,
+          );
+          continue;
+        }
+
+        const cleanData = {};
+        for (const key in balance) {
+          if (key !== "tempId") {
+            cleanData[key] = balance[key];
+          }
+        }
+
+        await this.saveBalance(cleanData);
+      }
+
+      this.loading = false;
+      await this.loadData();
+      alert("Данные сохранены");
+    },
+
+    resetForm() {
+      if (confirm("Вы уверены, что хотите сбросить все изменения?")) {
+        this.loadData();
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -243,6 +364,11 @@ export default {
   color: white;
   font-weight: 600;
   cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .reset-btn {

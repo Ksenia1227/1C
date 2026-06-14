@@ -17,7 +17,7 @@
           <div class="form-grid">
             <div class="form-field">
               <label>Инвентарный номер</label>
-              <input v-model="animal.inventory_number" type="text" />
+              <input v-model.number="animal.inventory_number" type="text" />
             </div>
             <div class="form-field">
               <label>Пол</label>

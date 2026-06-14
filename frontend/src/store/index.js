@@ -12,6 +12,9 @@ import fixedAsset from "./fixedAsset";
 import crop from "./crop";
 import structure from "./structure";
 import livestock from "./livestock";
+import animalBalance from "./animalBalance";
+import plantBalance from "./plantBalance";
+import goodsBalance from "./goodsBalance";
 
 export default createStore({
   state: {},
@@ -31,6 +34,9 @@ export default createStore({
     fixedAsset: fixedAsset,
     crop: crop,
     structure: structure,
-    livestock: livestock
+    livestock: livestock,
+    animalBalance: animalBalance,
+    plantBalance: plantBalance,
+    goodsBalance: goodsBalance
   },
 });
