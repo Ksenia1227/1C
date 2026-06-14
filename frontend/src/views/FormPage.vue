@@ -118,7 +118,7 @@
             </div>
             <div class="info-item">
               <strong>Дата регистрации:</strong>
-              {{ formatDate(generated.organization?.[6]) }}
+              {{ generated.organization?.[6] }}
             </div>
             <div class="info-item">
               <strong>Регистрирующий орган:</strong>
@@ -404,40 +404,6 @@
       </details>
 
       <details class="data-section">
-        <summary>Карточка остатка (растениеводство)</summary>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Наименование</th>
-                <th>Счет</th>
-                <th>Склад</th>
-                <th>Серия (партия)</th>
-                <th>Количество</th>
-                <th>Ед. изм.</th>
-                <th>Код номенклатуры</th>
-                <th>Подразделение</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr v-for="(item, index) in generated.crop_ost" :key="index">
-                <td>{{ item[0] }}</td>
-                <td>{{ item[1] }}</td>
-                <td>{{ item[2] }}</td>
-                <td>{{ item[3] }}</td>
-                <td>{{ item[4] }}</td>
-                <td>{{ item[5] }}</td>
-                <td>{{ item[6] }}</td>
-                <td>{{ item[7] }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </details>
-
-      <details class="data-section">
         <summary>Поголовье по группам</summary>
 
         <div class="data-card">
@@ -470,47 +436,6 @@
                 <td>{{ formatDate(live[2]) }}</td>
                 <td>{{ live[3] }}</td>
                 <td>{{ live[4] }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </details>
-
-      <details class="data-section">
-        <summary>Ввод остатков животноводство</summary>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Счет</th>
-                <th>Инвентарный номер</th>
-                <th>Подразделение</th>
-                <th>Склад</th>
-                <th>Живая масса, кг</th>
-                <th>Сумма, руб</th>
-                <th>Первоначальная стоимость, руб</th>
-                <th>Срок полезного использования, мес</th>
-                <th>Дата принятия к учету</th>
-                <th>Количество голов</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr
-                v-for="(liveOst, index) in generated.livestock.ani_ost"
-                :key="index"
-              >
-                <td>{{ liveOst[0] }}</td>
-                <td>{{ liveOst[1] }}</td>
-                <td>{{ liveOst[2] }}</td>
-                <td>{{ liveOst[3] }}</td>
-                <td>{{ liveOst[4] }}</td>
-                <td>{{ liveOst[5] }}</td>
-                <td>{{ liveOst[6] }}</td>
-                <td>{{ liveOst[7] }}</td>
-                <td>{{ liveOst[8] }}</td>
-                <td>{{ liveOst[9] }}</td>
               </tr>
             </tbody>
           </table>
@@ -590,74 +515,6 @@
       </details>
 
       <details class="data-section">
-        <summary>Материалы и товары</summary>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Вид номенклатуры</th>
-                <th>Наименование</th>
-                <th>Полное Наименование</th>
-                <th>Единица</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr
-                v-for="(item, index) in generated.materials.materials_table"
-                :key="index"
-              >
-                <td>{{ item[0] }}</td>
-                <td>{{ item[1] }}</td>
-                <td>{{ item[2] }}</td>
-                <td>{{ item[3] }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </details>
-
-      <details class="data-section">
-        <summary>Остатки материалов и товаров</summary>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Номенклатура</th>
-                <th>Счет</th>
-                <th>Склад</th>
-                <th>Количество</th>
-                <th>Ед. изм.</th>
-                <th>Номер</th>
-                <th>Контрагент</th>
-                <th>Стоимость, руб</th>
-                <th>Подразделение</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr
-                v-for="(item, index) in generated.materials.materials_ost_table"
-                :key="index"
-              >
-                <td>{{ item[0] }}</td>
-                <td>{{ item[1] }}</td>
-                <td>{{ item[2] }}</td>
-                <td>{{ item[3] }}</td>
-                <td>{{ item[4] }}</td>
-                <td>{{ item[5] }}</td>
-                <td>{{ item[6] }}</td>
-                <td>{{ item[7] }}</td>
-                <td>{{ item[8] }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </details>
-
-      <details class="data-section">
         <summary>Контрагенты</summary>
 
         <div class="table-wrapper">
@@ -678,7 +535,6 @@
                 <th>Фактический адрес</th>
                 <th>Телефон</th>
                 <th>Email</th>
-                <th>Контактное лицо</th>
               </tr>
             </thead>
 
@@ -702,7 +558,6 @@
                 <td>{{ contractor[11] }}</td>
                 <td>{{ contractor[12] }}</td>
                 <td>{{ contractor[13] }}</td>
-                <td>{{ contractor[14] }}</td>
               </tr>
             </tbody>
           </table>
@@ -731,7 +586,7 @@
               >
                 <td>{{ contract[0] }}</td>
                 <td>{{ contract[1] }}</td>
-                <td>{{ formatDate(contract[2]) }}</td>
+                <td>{{ contract[2] }}</td>
                 <td>{{ contract[3] }}</td>
               </tr>
             </tbody>

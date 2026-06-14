@@ -1,6 +1,7 @@
 const { user } = require('../models/user')
 const { Building } = require('../models/building')
 const { FixedAsset } = require('../models/asset')
+const { BalanceCardGood } = require('../models/balance_card_good')
 
 //  Building 
 exports.getBuilding = async (req, res) => {
