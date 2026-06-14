@@ -26,8 +26,11 @@ router.put('/weight_gain', [checkJwt.checkToken],controller.updateWeightGain)
 router.get('/transfer', [checkJwt.checkToken],controller.getAnimalTransfer)
 router.post('/transfer', [checkJwt.checkToken], controller.addAnimalTransfer)
 router.put('/transfer', [checkJwt.checkToken],controller.updateAnimalTransfer)
-
 router.get('/milking', [checkJwt.checkToken],controller.getMilking)
 router.post('/milking', [checkJwt.checkToken], controller.addMilking)
 router.put('/milking', [checkJwt.checkToken],controller.updateMilking)
+
+router.get('/feed_write', [checkJwt.checkToken],controller.getFeedWriteOff)
+router.post('/feed_write', [checkJwt.checkToken], controller.addFeedWriteOff)
+router.put('/feed_write', [checkJwt.checkToken],controller.updateFeedWriteOff)
 module.exports = router

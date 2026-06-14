@@ -11,9 +11,10 @@ const { Position } = require('../models/position');
 const { NomenclatureType } = require('../models/nomenclature_type');
 const { Nomenclature } = require('../models/nomenclature');
 const { Unit } = require('../models/unit');
+const { ProductSale } = require('../models/product_sale');
 
 
-// ---- Organization ----
+//  Organization
 exports.getOrganization = async (req, res) => {
     try {
         const orgs = await Organization.findAll({ where: { uid: req.userUid } });
@@ -106,7 +107,7 @@ exports.updateOrganization = async (req, res) => {
     }
 };
 
-// ---- Division ----
+//  Division 
 exports.getDivision = async (req, res) => {
     try {
         const divisions = await Division.findAll({ where: { uid: req.userUid } });
@@ -140,7 +141,7 @@ exports.updateDivision = async (req, res) => {
     }
 };
 
-// ---- Counterparty ----
+// Counterparty 
 exports.getCounterparty = async (req, res) => {
     try {
         const counterparties = await Counterparty.findAll({ where: { uid: req.userUid } });
@@ -201,7 +202,7 @@ exports.updateCounterparty= async (req, res) => {
     }
 };
 
-// ---- Employee ----
+// Employee 
 exports.getEmployee = async (req, res) => {
     try {
         const employees = await Employee.findAll({ where: { uid: req.userUid } });
@@ -261,7 +262,7 @@ exports.updateEmployee= async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-// ---- ContractCounterparty ----
+//  ContractCounterparty 
 exports.getContractCounterparty = async (req, res) => {
     try {
         const contracts = await ContractCounterparty.findAll({ where: { uid: req.userUid } });
@@ -303,7 +304,7 @@ exports.updateContractCounterparty= async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-// ---- ContractEmployee ----
+// Contract Employee 
 exports.getContractEmployee = async (req, res) => {
     try {
         const contracts = await ContractEmployee.findAll({ where: { uid: req.userUid } });
@@ -356,7 +357,7 @@ exports.updateContractEmployee = async (req, res) => {
 };
 
 
-// ---- Nomenclature ----
+//  Nomenclature 
 exports.getNomenclature = async (req, res) => {
     try {
         const nomenclature = await Nomenclature.findAll({ where: { uid: req.userUid } });
@@ -398,7 +399,7 @@ exports.updateNomenclature = async (req, res) => {
     }
 };
 
-// Справочники  
+// Локальные Справочники  
 exports.getEntity_type = async (req, res) => {
     try {
         const entity_type = await EntityType.findAll();
@@ -439,6 +440,58 @@ exports.getPosition = async (req, res) => {
     try {
         const position = await Position.findAll();
         return res.json(position);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+//  Product sale 
+exports.getProductSale = async (req, res) => {
+    try {
+        const product = await ProductSale.findAll({ where: { uid: req.userUid } });
+        return res.json(product);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.addProductSale = async (req, res) => {
+    try {
+        const nomenclature = await ProductSale.create({
+            date:req.body.date,
+            number: req.body.number,
+            counterparty_id: req.body.counterparty_id,
+            building_id:req.body.building_id,
+            nomenclature_id:req.body.nomenclature_id,
+            quantity:req.body.quantity,
+            unit_id:req.body.unit_id,
+            price:req.body.price,
+            status: req.body.status,
+            uid: req.userUid
+        });
+        return res.status(201).json({ message: 'Product sale added successfully', ProductSale: product });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.updateProductSale = async (req, res) => {
+    try {
+        const product = await ProductSale.findOne({ where: {product_sale_id: req.body.product_sale_id, uid: req.userUid } });
+        if (!product) return res.status(404).json({ message: 'Product sale not found' });
+        await product.update({ 
+           date:req.body.date,
+            number: req.body.number,
+            counterparty_id: req.body.counterparty_id,
+            building_id:req.body.building_id,
+            nomenclature_id:req.body.nomenclature_id,
+            quantity:req.body.quantity,
+            unit_id:req.body.unit_id,
+            price:req.body.price,
+            status: req.body.status,
+            uid: req.userUid
+           });
+        return res.json({ message: 'Product sale updated successfully', ProductSale: product });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

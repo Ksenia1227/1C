@@ -6,6 +6,8 @@ const { OffSpring } = require('../models/off_spring');
 const { WeightGain } = require('../models/weight_gain');
 const { AnimalTransfer } = require('../models/animal_transfer');
 const { Milking } = require('../models/milking');
+const { FeedWriteOff } = require('../models/feed_write_off');
+const { FeedWriteOffItem } = require('../models/feed_write_off_item');
 
 // AnimalGroup 
 exports.getAnimalGroup = async (req, res) => {
@@ -350,7 +352,7 @@ exports.updateAnimalTransfer = async (req, res) => {
 exports.getMilking = async (req, res) => {
     try {
         const milking = await Milking.findAll({ where: { uid: req.userUid } });
-        return res.json(animal);
+        return res.json(milking);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -390,7 +392,98 @@ exports.updateMilking = async (req, res) => {
             milk_amount:req.body.milk_amount,
             uid: req.userUid
         });
-        return res.json({ message: 'Milking updated successfully', Milking_id: milking });
+        return res.json({ message: 'Milking updated successfully', Milking: milking });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+// Feed write off
+exports.getFeedWriteOff = async (req, res) => {
+    try {
+        const feed = await FeedWriteOff.findAll({ where: { uid: req.userUid } });
+        return res.json(feed);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.addFeedWriteOff = async (req, res) => {
+    try {
+        const feed = await FeedWriteOff.create({
+            date: req.body.date,
+            from_building_id: req.body.from_building_id,
+            to_building_id: req.body.to_building_id,
+            department_id: req.body.department_id,
+            animal_group_id: req.body.animal_group_id,
+            head_count: req.body.head_count,
+            cost_account_id: req.body.cost_account_id,
+            employee_id:req.body.employee_id,
+            uid: req.userUid
+        });
+        return res.status(201).json({ message: 'Feed write off added successfully', FeedWriteOff: feed });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.updateFeedWriteOff = async (req, res) => {
+    try {
+        const feed = await FeedWriteOff.findOne({ where: { feed_write_off_id: req.body.feed_write_off_id, uid: req.userUid } });
+        if (!feed) return res.status(404).json({ message: 'Feed write off not found' });
+        await feed.update({
+            date: req.body.date,
+            from_building_id: req.body.from_building_id,
+            to_building_id: req.body.to_building_id,
+            department_id: req.body.department_id,
+            animal_group_id: req.body.animal_group_id,
+            head_count: req.body.head_count,
+            cost_account_id: req.body.cost_account_id,
+            employee_id:req.body.employee_id,
+            uid: req.userUid
+        });
+        return res.json({ message: 'Feed write off updated successfully', FeedWriteOff: feed });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
+// Feed write off item
+exports.getFeedWriteOffItem = async (req, res) => {
+    try {
+        const item = await FeedWriteOffItem.findAll({ where: { uid: req.userUid } });
+        return res.json(item);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.addFeedWriteOff = async (req, res) => {
+    try {
+        const item = await FeedWriteOffItem.create({
+            feed_write_off_id: req.body.feed_write_off_id,
+            nomenclature_id: req.body.nomenclature_id,
+            quantity: req.body.quantity,
+            uid: req.userUid
+        });
+        return res.status(201).json({ message: 'Feed write off item added successfully', FeedWriteOffItem: item });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.updateFeedWriteOffItem = async (req, res) => {
+    try {
+        const item = await FeedWriteOffItem.findOne({ where: { item_id: req.body.item_id, uid: req.userUid } });
+        if (!item) return res.status(404).json({ message: 'Feed write off item not found' });
+        await item.update({
+            feed_write_off_id: req.body.feed_write_off_id,
+            nomenclature_id: req.body.nomenclature_id,
+            quantity: req.body.quantity,
+            uid: req.userUid
+        });
+        return res.json({ message: 'Feed write off item updated successfully', FeedWriteOffItem: item });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
