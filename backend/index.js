@@ -39,9 +39,9 @@ app.use((req, res, next) => {
 // const { get_balance_card_plant_table } = require('./models/balance_card_plant');
 
 
-const { get_offspring_table } = require('./models/off_spring');
+// const { get_offspring_table } = require('./models/off_spring');
 // const { get_weight_gain_table } = require('./models/weight_gain');
-const { get_animal_transfer_table } = require('./models/animal_transfer');
+// const { get_animal_transfer_table } = require('./models/animal_transfer');
 // const { get_milking_table } = require('./models/milking');
 // const { get_feed_write_off_table } = require('./models/feed_write_off');
 // const { get_feed_write_off_item_table } = require('./models/feed_write_off_item');
@@ -57,8 +57,8 @@ const { get_animal_transfer_table } = require('./models/animal_transfer');
 // const { get_fuel_write_off_table } = require('./models/fuel_write_off');
 // const { get_fertilizer_write_off_table } = require('./models/fertilizer_write_off');
 
- async function initTables() {
-  try {
+//  async function initTables() {
+//   try {
 //       await get_auths_table();  
 //       await get_users_table();  
 //       await get_account_table();
@@ -87,9 +87,9 @@ const { get_animal_transfer_table } = require('./models/animal_transfer');
 //       await get_balance_card_plant_table(); 
 
 //       await get_movement_table(); 
-      await get_offspring_table();
+    //   await get_offspring_table();
 //       await get_weight_gain_table();
-      await get_animal_transfer_table();
+    //   await get_animal_transfer_table();
 //       await get_milking_table();
 //       await get_feed_write_off_table();
 //       await get_feed_write_off_item_table();
@@ -103,11 +103,11 @@ const { get_animal_transfer_table } = require('./models/animal_transfer');
 //       await get_fuel_write_off_table();
 //       await get_fertilizer_write_off_table();
       
-      console.log('Все таблицы созданы');
-  } catch (error) {
-      console.error('Ошибка при создании  таблиц:', error);
-  }
-}
+//       console.log('Все таблицы созданы');
+//   } catch (error) {
+//       console.error('Ошибка при создании  таблиц:', error);
+//   }
+// }
 
 // async function initTables() {
 //   try {
@@ -117,7 +117,7 @@ const { get_animal_transfer_table } = require('./models/animal_transfer');
 //     console.error('Ошибка при создании таблиц:', error);
 //   }
 // }
-initTables();
+// initTables();
 
 // app.use(cors({origin:'*'}))
 

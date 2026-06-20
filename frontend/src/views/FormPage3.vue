@@ -39,10 +39,6 @@
           <div v-else-if="currentMainButton === 'animal'">
             <AnimalPro />
           </div>
-
-          <div v-else-if="currentMainButton === 'machine'">
-            <MachineryPro />
-          </div>
         </div>
 
         <div class="nav-header">
@@ -528,7 +524,6 @@
 
 <script>
 import AnimalPro from "./forms/AnimalPro.vue";
-import MachineryPro from "./forms/MachineryPro.vue";
 import CropPro from "./forms/CropPro.vue";
 
 export default {
@@ -536,7 +531,6 @@ export default {
 
   components: {
     AnimalPro,
-    MachineryPro,
     CropPro
   },
 
@@ -546,15 +540,13 @@ export default {
 
       mainButtons: [
         { id: "crop", label: "Растениеводство" },
-        { id: "animal", label: "Животноводство" },
-        { id: "machine", label: "Основные средства" }
+        { id: "animal", label: "Животноводство" }
       ],
 
       taskTexts: {
         crop:
           "заполнить процессы растениеводства",
-        animal: "заполнить процессы животноводства",
-        machine: "заполнить процессы основных средств"
+        animal: "заполнить процессы животноводства"
       },
     };
   },
@@ -575,8 +567,7 @@ export default {
     allFormsList() {
       return [
         "crop",
-        "animal",
-        "machine"
+        "animal"
       ];
     },
 
@@ -607,11 +598,7 @@ export default {
         return (
           this.currentMainButton === "crop" 
         );
-      } else if (buttonId === "animal") {
-        return (
-          this.currentMainButton === "animal" 
-        );
-      }
+      } 
       return this.currentMainButton === buttonId;
     },
 

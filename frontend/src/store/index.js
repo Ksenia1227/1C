@@ -16,6 +16,7 @@ import animalBalance from "./animalBalance";
 import plantBalance from "./plantBalance";
 import goodsBalance from "./goodsBalance";
 import animalPro from "./animalPro";
+import goodsReceipt from "./goodsReceipt";
 
 export default createStore({
   state: {},
@@ -39,6 +40,7 @@ export default createStore({
     animalBalance: animalBalance,
     plantBalance: plantBalance,
     goodsBalance: goodsBalance,
-    animalPro: animalPro
+    animalPro: animalPro,
+    goodsReceipt: goodsReceipt
   },
 });

@@ -31,6 +31,10 @@ router.get('/sale', [checkJwt.checkToken],controller.getProductSale)
 router.post('/sale', [checkJwt.checkToken], controller.addProductSale)
 router.put('/sale', [checkJwt.checkToken],controller.updateProductSale)
 
+router.get('/receipt', [checkJwt.checkToken],controller.getGoodsReceipt)
+router.post('/receipt', [checkJwt.checkToken], controller.addGoodsReceipt)
+router.put('/receipt', [checkJwt.checkToken],controller.updateGoodsReceipt)
+
 router.get('/movement', [checkJwt.checkToken],controller.getMovement)
 router.get('/account', [checkJwt.checkToken],controller.getAccount)
 router.get('/position', [checkJwt.checkToken],controller.getPosition)

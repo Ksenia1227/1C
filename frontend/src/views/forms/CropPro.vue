@@ -1,133 +1,100 @@
 <template>
   <form @submit.prevent="sendForm" class="dynamic-form">
     <div class="form-section">
-      <h3>Поля</h3>
-      <div class="fields-list">
-        <div v-for="(field, idx) in formData.fields" :key="idx" class="field-card">
+      <h3>Оприходование</h3>
+      <div class="items-list">
+        <div
+          v-for="(item, idx) in formData.receipts"
+          :key="idx"
+          class="item-card"
+        >
           <div class="card-header">
-            <span>Поле {{ idx + 1 }}</span>
-            <button type="button" class="remove-btn" @click="removeField(idx)">✕</button>
+            <span>Запись {{ idx + 1 }}</span>
+            <button
+              type="button"
+              class="remove-btn"
+              @click="removeReceipt(idx)"
+            >
+              ✕
+            </button>
           </div>
           <div class="form-grid">
             <div class="form-field">
-              <label>Группа</label>
-              <input v-model="field.group" type="text" />
+              <label>Дата</label>
+              <input v-model="item.date" type="date" />
             </div>
             <div class="form-field">
-              <label>Наименование поля</label>
-              <input v-model="field.name" type="text" />
+              <label>Контрагент</label>
+              <select v-model="item.counterparty_id">
+                <option :value="null">Выберите контрагента</option>
+                <option v-for="c in counterparties" :key="c.counterparty_id" :value="c.counterparty_id">
+                  {{ c.name_program || c.name_for_doc }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
-              <label>Площадь поля, га</label>
-              <input v-model.number="field.field_area" type="number" step="0.01" />
+              <label>Склад</label>
+              <select v-model="item.building_id">
+                <option :value="null">Выберите склад</option>
+                <option v-for="b in buildings" :key="b.building_id" :value="b.building_id">
+                  {{ b.name }}
+                </option>
+              </select>
             </div>
             <div class="form-field">
-              <label>Код</label>
-              <input v-model="field.code" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Подразделение</label>
-              <select v-model="field.departament_id">
-                <option :value="null">Выберите подразделение</option>
-                <option 
-                  v-for="division in divisions" 
-                  :key="division.division_id"
-                  :value="division.division_id"
+              <label>Вид движения</label>
+              <select v-model="item.movement_id">
+                <option :value="null">Выберите вид движения</option>
+                <option
+                  v-for="m in movements"
+                  :key="m.movement_id"
+                  :value="m.movement_id"
                 >
-                  {{ division.name }}
+                  {{ m.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Номенклатура</label>
+              <select v-model="item.nomenclature_id">
+                <option :value="null">Выберите номенклатуру</option>
+                <option v-for="n in nomenclatures" :key="n.nomenclature_id" :value="n.nomenclature_id">
+                  {{ n.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Количество</label>
+              <input
+                v-model.number="item.quantity"
+                type="number"
+                step="0.01"
+                min="0"
+              />
+            </div>
+            <div class="form-field">
+              <label>Цена, руб</label>
+              <input
+                v-model.number="item.price"
+                type="number"
+                step="0.01"
+                min="0"
+              />
+            </div>
+            <div class="form-field">
+              <label>Счёт учёта</label>
+              <select v-model="item.account_id">
+                <option :value="null">Выберите счет</option>
+                <option v-for="a in accounts" :key="a.account_id" :value="a.account_id">
+                  {{ a.code }} - {{ a.name }}
                 </option>
               </select>
             </div>
           </div>
         </div>
-        <button type="button" class="add-btn" @click="addField">+ Добавить поле</button>
-      </div>
-    </div>
-
-    <div class="form-section">
-      <h3>Номенклатура растениеводства</h3>
-      <div class="nomenclatures-list">
-        <div v-for="(nomenclature, idx) in formData.nomenclatures" :key="idx" class="nomenclature-card">
-          <div class="card-header">
-            <span>Номенклатура  {{ idx + 1 }}</span>
-            <button type="button" class="remove-btn" @click="removeNomenclature(idx)">✕</button>
-          </div>
-          <div class="form-grid">
-            <div class="form-field">
-              <label>Вид номенклатуры</label>
-              <select v-model="nomenclature.item_type">
-                <option :value="1">Продукция</option>
-                <option :value="2">Животные</option>
-                <option :value="3">Материалы</option>
-                <option :value="4">Оборудование</option>
-                <option :value="5">Спецодежда</option>
-                <option :value="6">Топливо</option>
-                <option :value="7">Услуги</option>
-                <option :value="8">Товары на ответственном хранении</option>
-                <option :value="9">Товары на комиссии</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label>Наименование</label>
-              <input v-model="nomenclature.name" type="text" />
-            </div>
-            <div class="form-field full-width">
-              <label>Полное наименование</label>
-              <input v-model="nomenclature.full_name" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Единица измерения</label>
-              <select v-model="nomenclature.unit_id">
-                <option :value="1">Штука</option>
-                <option :value="2">Литр</option>
-                <option :value="3">Комплект</option>
-                <option :value="4">Килограмм</option>
-                <option :value="5">Тонна</option>
-                <option :value="6">Грамм</option>
-                <option :value="7">Центнер</option>
-                <option :value="8">Голова</option>
-                <option :value="9">Гектар</option>
-                <option :value="10">Метр</option>
-                <option :value="11">Квадратный метр</option>
-                <option :value="12">Кубический метр</option>
-                <option :value="13">Мешок</option>
-                <option :value="14">Рулон</option>
-                <option :value="15">Доза</option>
-                <option :value="16">Упаковка</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <button type="button" class="add-btn" @click="addNomenclature">+ Добавить номенклатуру</button>
-      </div>
-    </div>
-
-    <div class="form-section">
-      <h3>Культуры</h3>
-      <div class="crop-list">
-        <div v-for="(crop, idx) in formData.crops" :key="idx" class="crop-card">
-          <div class="card-header">
-            <span>Культура {{ idx + 1 }}</span>
-            <button type="button" class="remove-btn" @click="removeCrop(idx)">✕</button>
-          </div>
-          <div class="form-grid">
-            <div class="form-field">
-              <label>Наименование</label>
-              <input v-model="crop.name" type="text" />
-            </div>
-            <div class="form-field">
-              <label>Группа</label>
-              <select v-model="crop.group_id">
-                <option :value="1">Зерновые культуры</option>
-                <option :value="2">Масличные культуры</option>
-                <option :value="3">Кормовые культуры</option>
-                <option :value="4">Бобовые культуры</option>
-                <option :value="5">Технические культуры</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <button type="button" class="add-btn" @click="addCrop">+ Добавить культуру</button>
+        <button type="button" class="add-btn" @click="addReceipt">
+          + Добавить запись
+        </button>
       </div>
     </div>
 
@@ -146,45 +113,39 @@
 import { mapState, mapActions } from "vuex";
 
 export default {
-  name: "CropForm",
+  name: "GoodsReceiptForm",
   data() {
     return {
       loading: false,
       tempIdCounter: 0,
       formData: {
-        fields: [],
-        nomenclatures: [],
-        crops: [],
+        receipts: [],
       },
     };
   },
   computed: {
-    ...mapState("crop", {
-      storeFields: (state) => state.fields,
-      storeNomenclatures: (state) => state.nomenclatures,
-      storeCrops: (state) => state.crops,
-      storeLoading: (state) => state.loading,
+    ...mapState("goodsReceipt", {
+      storeReceipts: (state) => state.receipts,
+      counterparties: (state) => state.counterparties,
+      buildings: (state) => state.buildings,
+      movements: (state) => state.movements,
+      nomenclatures: (state) => state.nomenclatures,
+      accounts: (state) => state.accounts,
     }),
-    ...mapState("organization", {
-      storeDivisions: (state) => state.divisions,
-    }),
-    divisions() {
-      return this.storeDivisions || [];
-    },
   },
   async mounted() {
     await this.loadData();
   },
   methods: {
-    ...mapActions("crop", [
-      "fetchFields", 
-      "saveField", 
-      "fetchNomenclatures", 
-      "saveNomenclature",
-      "fetchCrops", 
-      "saveCrop"
+    ...mapActions("goodsReceipt", [
+      "fetchReceipts",
+      "saveReceipt",
+      "fetchCounterparties",
+      "fetchBuildings",
+      "fetchMovements",
+      "fetchNomenclatures",
+      "fetchAccounts",
     ]),
-    ...mapActions("organization", ["fetchDivisions"]),
 
     generateTempId() {
       return `temp_${Date.now()}_${++this.tempIdCounter}`;
@@ -192,143 +153,60 @@ export default {
 
     async loadData() {
       this.loading = true;
-
       await Promise.all([
-        this.fetchFields(), 
-        this.fetchNomenclatures(), 
-        this.fetchCrops(),
-        this.fetchDivisions()
+        this.fetchReceipts(),
+        this.fetchCounterparties(),
+        this.fetchBuildings(),
+        this.fetchMovements(),
+        this.fetchNomenclatures(),
+        this.fetchAccounts(),
       ]);
 
-      if (this.storeFields && Array.isArray(this.storeFields)) {
-        this.formData.fields = this.storeFields.map((f) => {
-          return {
-            ...f,
-            tempId: this.generateTempId(),
-          };
-        });
+      if (this.storeReceipts && Array.isArray(this.storeReceipts)) {
+        this.formData.receipts = this.storeReceipts.map((i) => ({
+          ...i,
+          tempId: this.generateTempId(),
+        }));
       } else {
-        this.formData.fields = [];
-      }
-
-      if (this.storeNomenclatures && Array.isArray(this.storeNomenclatures)) {
-        this.formData.nomenclatures = this.storeNomenclatures.map((n) => {
-          return {
-            ...n,
-            tempId: this.generateTempId(),
-          };
-        });
-      } else {
-        this.formData.nomenclatures = [];
-      }
-
-      if (this.storeCrops && Array.isArray(this.storeCrops)) {
-        this.formData.crops = this.storeCrops.map((c) => {
-          return {
-            ...c,
-            tempId: this.generateTempId(),
-          };
-        });
-      } else {
-        this.formData.crops = [];
+        this.formData.receipts = [];
       }
 
       this.loading = false;
     },
 
-    addField() {
-      this.formData.fields.push({
+    addReceipt() {
+      this.formData.receipts.push({
         tempId: this.generateTempId(),
-        group: "",
-        name: "",
-        field_area: null,
-        code: "",
-        departament_id: "",
+        date: "",
+        counterparty_id: null,
+        building_id: null,
+        movement_id: null,
+        nomenclature_id: null,
+        quantity: null,
+        price: null,
+        account_id: null,
       });
     },
 
-    removeField(index) {
-      if (confirm("Вы уверены, что хотите удалить это поле?")) {
-        this.formData.fields.splice(index, 1);
-      }
-    },
-
-    addNomenclature() {
-      this.formData.nomenclatures.push({
-        tempId: this.generateTempId(),
-        item_type: "",
-        name: "",
-        full_name: "",
-        unit_id: "",
-      });
-    },
-
-    removeNomenclature(index) {
-      if (confirm("Вы уверены, что хотите удалить эту номенклатуру?")) {
-        this.formData.nomenclatures.splice(index, 1);
-      }
-    },
-
-    addCrop() {
-      this.formData.crops.push({
-        tempId: this.generateTempId(),
-        name: "",
-        group_id: "",
-      });
-    },
-
-    removeCrop(index) {
-      if (confirm("Вы уверены, что хотите удалить эту культуру?")) {
-        this.formData.crops.splice(index, 1);
+    removeReceipt(index) {
+      if (confirm("Удалить запись?")) {
+        this.formData.receipts.splice(index, 1);
       }
     },
 
     async sendForm() {
       this.loading = true;
 
-      for (let i = 0; i < this.formData.fields.length; i++) {
-        const field = this.formData.fields[i];
-        if (!field.name && !field.field_id) {
-          console.log(`Поле ${i + 1} не имеет названия, пропускаем`);
-          continue;
-        }
-        const cleanData = {};
-        for (const key in field) {
-          if (key !== 'tempId') {
-            cleanData[key] = field[key];
-          }
-        }
-        await this.saveField(cleanData);
-      }
+      for (const item of this.formData.receipts) {
+        if (!item.nomenclature_id && !item.goods_receipt_id) continue;
 
-      for (let i = 0; i < this.formData.nomenclatures.length; i++) {
-        const nomenclature = this.formData.nomenclatures[i];
-        if (!nomenclature.name && !nomenclature.nomenclature_id) {
-          console.log(`Номенклатура ${i + 1} не имеет названия, пропускаем`);
-          continue;
-        }
         const cleanData = {};
-        for (const key in nomenclature) {
-          if (key !== 'tempId') {
-            cleanData[key] = nomenclature[key];
+        for (const key in item) {
+          if (key !== "tempId") {
+            cleanData[key] = item[key];
           }
         }
-        await this.saveNomenclature(cleanData);
-      }
-
-      for (let i = 0; i < this.formData.crops.length; i++) {
-        const crop = this.formData.crops[i];
-        if (!crop.name && !crop.crop_id) {
-          console.log(`Культура ${i + 1} не имеет названия, пропускаем`);
-          continue;
-        }
-        const cleanData = {};
-        for (const key in crop) {
-          if (key !== 'tempId') {
-            cleanData[key] = crop[key];
-          }
-        }
-        await this.saveCrop(cleanData);
+        await this.saveReceipt(cleanData);
       }
 
       this.loading = false;
@@ -337,7 +215,7 @@ export default {
     },
 
     resetForm() {
-      if (confirm("Вы уверены, что хотите сбросить все изменения?")) {
+      if (confirm("Сбросить все изменения?")) {
         this.loadData();
       }
     },
@@ -374,10 +252,6 @@ export default {
   gap: 12px;
 }
 
-.form-field.full-width {
-  grid-column: span 2;
-}
-
 .form-field label {
   margin: 0;
   color: #000000;
@@ -394,9 +268,7 @@ export default {
   color: #000;
 }
 
-.field-card,
-.nomenclature-card,
-.crop-card {
+.item-card {
   background: rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   padding: 20px;
@@ -476,9 +348,6 @@ export default {
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
-  }
-  .form-field.full-width {
-    grid-column: span 1;
   }
   .form-field {
     grid-template-columns: 1fr;
