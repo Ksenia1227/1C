@@ -29,7 +29,7 @@ const Offspring = sequelize.define('offspring', {
     },
    nomenclature_id: {
         type: DataTypes.BIGINT,
-        references: { model: 'nomenclature', key: 'nomenclature_id' }
+        references: { model: 'animal_group', key: 'animal_group_id' }
     },
     mother_animal_id: {
         type: DataTypes.BIGINT,

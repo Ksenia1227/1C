@@ -8,7 +8,7 @@
 
         <div class="buttons-group">
           <div
-            v-for="button in mainButtons"
+            v-for="button in mainButtons" 
             :key="button.id"
             class="tech-button"
             :class="{ active: isActiveMainButton(button.id) }"
@@ -32,44 +32,16 @@
         </div>
 
         <div class="form-content">
-          <div v-if="currentMainButton === 'organization'">
-            <OrganizationForm />
+          <div v-if="currentMainButton === 'crop'">
+            <CropPro />
           </div>
 
-          <div v-else-if="currentMainButton === 'contractors'">
-            <ContractorsForm />
+          <div v-else-if="currentMainButton === 'animal'">
+            <AnimalPro />
           </div>
 
-          <div v-else-if="currentMainButton === 'contract'">
-            <ContractCon />
-          </div>
-
-          <div v-else-if="currentMainButton === 'employees'">
-            <EmployeesForm />
-          </div>
-
-          <div v-else-if="currentMainButton === 'contractEmp'">
-            <ContractEmp />
-          </div>
-
-          <div v-else-if="currentMainButton === 'crop'">
-            <CropForm />
-          </div>
-
-          <div v-else-if="currentMainButton === 'cropPosev'">
-            <CropFormPosev />
-          </div>
-
-          <div v-else-if="currentMainButton === 'livestock'">
-            <LivestockForm />
-          </div>
-
-          <div v-else-if="currentMainButton === 'buildings'">
-            <BuildingsForm />
-          </div>
-
-          <div v-else-if="currentMainButton === 'machinery'">
-            <MachineryForm />
+          <div v-else-if="currentMainButton === 'machine'">
+            <MachineryPro />
           </div>
         </div>
 
@@ -555,57 +527,34 @@
 </template>
 
 <script>
-import OrganizationForm from "./forms/OrganizationForm.vue";
-import ContractorsForm from "./forms/ContractorsForm.vue";
-import EmployeesForm from "./forms/EmployeesForm.vue";
-import CropForm from "./forms/CropForm.vue";
-import CropFormPosev from "./forms/CropFormPosev.vue";
-import LivestockForm from "./forms/LivestockForm.vue";
-import BuildingsForm from "./forms/BuildingsForm.vue";
-import MachineryForm from "./forms/MachineryForm.vue";
-import ContractCon from "./forms/ContractCon.vue";
-import ContractEmp from "./forms/ContractEmp.vue";
+import AnimalPro from "./forms/AnimalPro.vue";
+import MachineryPro from "./forms/MachineryPro.vue";
+import CropPro from "./forms/CropPro.vue";
 
 export default {
   name: "DataEntryView",
 
   components: {
-    OrganizationForm,
-    ContractorsForm,
-    ContractCon,
-    EmployeesForm,
-    ContractEmp,
-    CropForm,
-    CropFormPosev,
-    LivestockForm,
-    BuildingsForm,
-    MachineryForm,
+    AnimalPro,
+    MachineryPro,
+    CropPro
   },
 
   data() {
     return {
-      currentMainButton: "organization",
+      currentMainButton: "crop",
 
       mainButtons: [
-        { id: "organization", label: "Общая информация" },
         { id: "crop", label: "Растениеводство" },
-        { id: "livestock", label: "Животноводство" },
-        { id: "buildings", label: "Здания и сооружения" },
-        { id: "machinery", label: "Машино-тракторный парк" },
+        { id: "animal", label: "Животноводство" },
+        { id: "machine", label: "Основные средства" }
       ],
 
       taskTexts: {
-        organization:
-          "заполнить основные сведения (организация, подразделения, банки, налоговая, ПФР, ФСС, статистика)",
-        contractors: "заполнить сведения о контрагентах",
-        contract: "заполнить сведения о договорах с контрагентами",
-        employees: "заполнить сведения о сотрудниках",
-        contractEmp: "заполнить сведения о договорах с сотрудниками",
-        crop: "заполнить информацию о полях и культурах",
-        cropPosev: "заполнить информацию о структуре посевных площадей",
-        livestock: "заполнить данные о поголовье и животных",
-        buildings: "заполнить сведения о зданиях и сооружениях",
-        machinery: "заполнить данные машинно-тракторного парка",
+        crop:
+          "заполнить процессы растениеводства",
+        animal: "заполнить процессы животноводства",
+        machine: "заполнить процессы основных средств"
       },
     };
   },
@@ -625,16 +574,9 @@ export default {
     // Общий список всех форм в порядке навигации
     allFormsList() {
       return [
-        "organization",
-        "contractors",
-        "contract",
-        "employees",
-        "contractEmp",
         "crop",
-        "cropPosev",
-        "livestock",
-        "buildings",
-        "machinery",
+        "animal",
+        "machine"
       ];
     },
 
@@ -661,18 +603,13 @@ export default {
 
   methods: {
     isActiveMainButton(buttonId) {
-      if (buttonId === "organization") {
+      if (buttonId === "crop") {
         return (
-          this.currentMainButton === "organization" ||
-          this.currentMainButton === "contractors" ||
-          this.currentMainButton === "contract" ||
-          this.currentMainButton === "employees" ||
-          this.currentMainButton === "contractEmp"
+          this.currentMainButton === "crop" 
         );
-      } else if (buttonId === "crop") {
+      } else if (buttonId === "animal") {
         return (
-          this.currentMainButton === "crop" ||
-          this.currentMainButton === "cropPosev"
+          this.currentMainButton === "animal" 
         );
       }
       return this.currentMainButton === buttonId;

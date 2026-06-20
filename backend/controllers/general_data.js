@@ -13,6 +13,7 @@ const { Nomenclature } = require('../models/nomenclature');
 const { Unit } = require('../models/unit');
 const { ProductSale } = require('../models/product_sale');
 const { GoodsReceipt } = require('../models/goods_receipt');
+const { Movement } = require('../models/movement');
 
 
 //  Organization
@@ -441,6 +442,15 @@ exports.getPosition = async (req, res) => {
     try {
         const position = await Position.findAll();
         return res.json(position);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getMovement = async (req, res) => {
+    try {
+        const movement = await Movement.findAll();
+        return res.json(movement);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

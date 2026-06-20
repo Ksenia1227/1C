@@ -27,10 +27,15 @@ router.get('/nomeclature', [checkJwt.checkToken],controller.getNomenclature)
 router.post('/nomeclature', [checkJwt.checkToken], controller.addNomenclature)
 router.put('/nomeclature', [checkJwt.checkToken],controller.updateNomenclature)
 
+router.get('/sale', [checkJwt.checkToken],controller.getProductSale)
+router.post('/sale', [checkJwt.checkToken], controller.addProductSale)
+router.put('/sale', [checkJwt.checkToken],controller.updateProductSale)
+
+router.get('/movement', [checkJwt.checkToken],controller.getMovement)
 router.get('/account', [checkJwt.checkToken],controller.getAccount)
 router.get('/position', [checkJwt.checkToken],controller.getPosition)
 router.get('/entity_type', [checkJwt.checkToken],controller.getEntity_type)
 router.get('/unit', [checkJwt.checkToken],controller.getUnit)
-router.get('/nomenclature_type', [checkJwt.checkToken],controller.getNomenclature_type)
+router.get('/nomeclature_type', [checkJwt.checkToken],controller.getNomenclature_type)
 
 module.exports = router

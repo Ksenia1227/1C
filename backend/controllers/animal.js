@@ -2,7 +2,7 @@ const { AnimalGroup } = require('../models/animal_group');
 const { Animal } = require('../models/animal');
 const { BalanceCardAnimal } = require('../models/balance_card_animal');
 const { RegistrationAnimal } = require('../models/registration_animal');
-const { OffSpring } = require('../models/off_spring');
+const { Offspring } = require('../models/off_spring');
 const { WeightGain } = require('../models/weight_gain');
 const { AnimalTransfer } = require('../models/animal_transfer');
 const { Milking } = require('../models/milking');
@@ -12,7 +12,7 @@ const { FeedWriteOffItem } = require('../models/feed_write_off_item');
 // AnimalGroup 
 exports.getAnimalGroup = async (req, res) => {
     try {
-        const groups = await AnimalGroup.findAll({ where: { uid: req.userUid } });
+        const groups = await AnimalGroup.findAll();
         return res.json(groups);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -183,18 +183,18 @@ exports.updateRegistratedAnimals = async (req, res) => {
 };
 
 // Off spring animals
-exports.getOffSpring = async (req, res) => {
+exports.getOffspring = async (req, res) => {
     try {
-        const animal = await OffSpring.findAll({ where: { uid: req.userUid } });
+        const animal = await Offspring.findAll({ where: { uid: req.userUid } });
         return res.json(animal);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
 
-exports.addOffSpring = async (req, res) => {
+exports.addOffspring = async (req, res) => {
     try {
-        const animal = await OffSpring.create({
+        const animal = await Offspring.create({
             date: req.body.date,
             cost_account_id: req.body.cost_account_id,
             movement_id: req.body.movement_id,
@@ -216,9 +216,9 @@ exports.addOffSpring = async (req, res) => {
     }
 };
 
-exports.updateOffSpring = async (req, res) => {
+exports.updateOffspring = async (req, res) => {
     try {
-        const animal = await OffSpring.findOne({ where: { offspring_id: req.body.offspring_id, uid: req.userUid } });
+        const animal = await Offspring.findOne({ where: { offspring_id: req.body.offspring_id, uid: req.userUid } });
         if (!animal) return res.status(404).json({ message: 'Off spring animal not found' });
         await animal.update({
             date: req.body.date,
