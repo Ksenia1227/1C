@@ -21,7 +21,17 @@ const Progress = sequelize.define('progress', {
     livestock: { type: DataTypes.BOOLEAN, defaultValue: false },        // Животноводство
     crop_farming: { type: DataTypes.BOOLEAN, defaultValue: false },     // Растениеводство
     buildings: { type: DataTypes.BOOLEAN, defaultValue: false },        // Здания и сооружения
-    machinery: { type: DataTypes.BOOLEAN, defaultValue: false }         // Машино-тракторный парк
+    machinery: { type: DataTypes.BOOLEAN, defaultValue: false },         // Машино-тракторный парк
+    // Новые поля
+    contractors: { type: DataTypes.BOOLEAN, defaultValue: false },      // Контрагенты
+    employees: { type: DataTypes.BOOLEAN, defaultValue: false },        // Сотрудники
+    crop_ost: { type: DataTypes.BOOLEAN, defaultValue: false },        // Остатки растениеводства
+    animal_ost: { type: DataTypes.BOOLEAN, defaultValue: false },      // Остатки животноводства
+    materials_ost: { type: DataTypes.BOOLEAN, defaultValue: false },   // Остатки материалов и товаров
+    crop_processes: { type: DataTypes.BOOLEAN, defaultValue: false },  // Процессы растениеводства
+    animal_processes: { type: DataTypes.BOOLEAN, defaultValue: false }, // Процессы животноводства
+    general_info_processes: { type: DataTypes.BOOLEAN, defaultValue: false }, // Процессы общей информации
+    machinery_processes: { type: DataTypes.BOOLEAN, defaultValue: false }    // Процессы основных средств
 }, {
     tableName: 'progress',
     timestamps: true
