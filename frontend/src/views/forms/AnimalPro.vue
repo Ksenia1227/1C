@@ -242,7 +242,7 @@
               <select v-model="item.employee_id">
                 <option :value="null">Выберите работника</option>
                 <option v-for="e in employees" :key="e.employee_id" :value="e.employee_id">
-                  {{ e.last_name }} {{ e.name }}
+                  {{ e.last_name }} {{ e.name }} {{ e.middle_name || '' }}
                 </option>
               </select>
             </div>

@@ -14,6 +14,7 @@ const { Unit } = require('../models/unit');
 const { ProductSale } = require('../models/product_sale');
 const { GoodsReceipt } = require('../models/goods_receipt');
 const { Movement } = require('../models/movement');
+const { WorkType } = require('../models/work_type');
 
 
 //  Organization
@@ -451,6 +452,15 @@ exports.getMovement = async (req, res) => {
     try {
         const movement = await Movement.findAll();
         return res.json(movement);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getWork_type = async (req, res) => {
+    try {
+        const work_type = await WorkType.findAll();
+        return res.json(work_type);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

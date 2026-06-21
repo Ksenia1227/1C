@@ -17,6 +17,8 @@ import plantBalance from "./plantBalance";
 import goodsBalance from "./goodsBalance";
 import animalPro from "./animalPro";
 import goodsReceipt from "./goodsReceipt";
+import waybill from "./waybill";
+import writeOff from "./writeOff";
 
 export default createStore({
   state: {},
@@ -41,6 +43,8 @@ export default createStore({
     plantBalance: plantBalance,
     goodsBalance: goodsBalance,
     animalPro: animalPro,
-    goodsReceipt: goodsReceipt
+    goodsReceipt: goodsReceipt,
+    waybill: waybill,
+    writeOff: writeOff
   },
 });

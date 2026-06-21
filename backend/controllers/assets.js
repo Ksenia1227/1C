@@ -3,6 +3,8 @@ const { Building } = require('../models/building')
 const { FixedAsset } = require('../models/asset')
 const { BalanceCardGood } = require('../models/balance_card_good')
 const { Waybill } = require('../models/way_bill')
+const { FuelWriteOff } = require('../models/fuel_write_off')
+const { FertilizerWriteOff } = require('../models/fertilizer_write_off')
 
 //  Building 
 exports.getBuilding = async (req, res) => {
@@ -160,7 +162,7 @@ exports.updateBalanceCardGood = async (req, res) => {
 // WayBill
 exports.getWayBill = async (req, res) => {
     try {
-        const waybill = await WayBill.findAll({ where: { uid: req.userUid } });
+        const waybill = await Waybill.findAll({ where: { uid: req.userUid } });
         return res.json(waybill);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -169,7 +171,7 @@ exports.getWayBill = async (req, res) => {
 
 exports.addWayBill = async (req, res) => {
     try {
-        const waybill = await WayBill.create({
+        const waybill = await Waybill.create({
             date: req.body.date,
             department_id: req.body.department_id,
             employee_id: req.body.employee_id,
@@ -190,7 +192,7 @@ exports.addWayBill = async (req, res) => {
 
 exports.updateWayBill = async (req, res) => {
     try {
-        const waybill = await WayBill.findOne({ where: { waybill_id: req.body.waybill_id, uid: req.userUid } });
+        const waybill = await Waybill.findOne({ where: { waybill_id: req.body.waybill_id, uid: req.userUid } });
         if (!waybill) return res.status(404).json({ message: 'WayBill not found' });
         await waybill.update({
             date: req.body.date,
@@ -224,7 +226,7 @@ exports.getFuelWriteOff = async (req, res) => {
 exports.addFuelWriteOff = async (req, res) => {
     try {
         const write_off = await FuelWriteOff.create({
-            waybill_id: req.body.department_id,
+            waybill_id: req.body.waybill_id,
             nomenclature_id: req.body.nomenclature_id,
             quantity: req.body.quantity,
             uid: req.userUid
@@ -240,7 +242,7 @@ exports.updateFuelWriteOff = async (req, res) => {
         const write_off = await FuelWriteOff.findOne({ where: { fuel_write_off_id: req.body.fuel_write_off_id, uid: req.userUid } });
         if (!write_off) return res.status(404).json({ message: 'Fuel write off not found' });
         await write_off.update({
-            waybill_id: req.body.department_id,
+            waybill_id: req.body.waybill_id,
             nomenclature_id: req.body.nomenclature_id,
             quantity: req.body.quantity,
             uid: req.userUid
@@ -264,7 +266,7 @@ exports.getFertilizerWriteOff = async (req, res) => {
 exports.addFertilizerWriteOff = async (req, res) => {
     try {
         const write_off = await FertilizerWriteOff.create({
-            waybill_id: req.body.department_id,
+            waybill_id: req.body.waybill_id,
             building_id: req.body.building_id,
             nomenclature_id: req.body.nomenclature_id,
             quantity: req.body.quantity,
@@ -281,7 +283,7 @@ exports.updateFertilizerWriteOff = async (req, res) => {
         const write_off = await FertilizerWriteOff.findOne({ where: { fertilizer_write_off_id: req.body.fertilizer_write_off_id, uid: req.userUid } });
         if (!write_off) return res.status(404).json({ message: 'Fertilizer Write Off not found' });
         await write_off.update({
-            waybill_id: req.body.department_id,
+            waybill_id: req.body.waybill_id,
             building_id: req.body.building_id,
             nomenclature_id: req.body.nomenclature_id,
             quantity: req.body.quantity,

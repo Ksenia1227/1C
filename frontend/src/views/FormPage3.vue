@@ -36,6 +36,14 @@
             <CropPro />
           </div>
 
+          <div v-if="currentMainButton === 'crop1'">
+            <CropPro1 />
+          </div>
+
+          <div v-if="currentMainButton === 'crop2'">
+            <CropPro2 />
+          </div>
+
           <div v-else-if="currentMainButton === 'animal'">
             <AnimalPro />
           </div>
@@ -525,13 +533,17 @@
 <script>
 import AnimalPro from "./forms/AnimalPro.vue";
 import CropPro from "./forms/CropPro.vue";
+import CropPro1 from "./forms/CropPro1.vue";
+import CropPro2 from "./forms/CropPro2.vue";
 
 export default {
   name: "DataEntryView",
 
   components: {
     AnimalPro,
-    CropPro
+    CropPro,
+    CropPro1,
+    CropPro2
   },
 
   data() {
@@ -545,7 +557,11 @@ export default {
 
       taskTexts: {
         crop:
-          "заполнить процессы растениеводства",
+          "заполнить процесс оприходования",
+        crop1:
+          "заполнить путевые листы",
+        crop2:
+          "заполнить процессы списания топлива и удобрений",
         animal: "заполнить процессы животноводства"
       },
     };
@@ -567,6 +583,8 @@ export default {
     allFormsList() {
       return [
         "crop",
+        "crop1",
+        "crop2",
         "animal"
       ];
     },
@@ -596,7 +614,9 @@ export default {
     isActiveMainButton(buttonId) {
       if (buttonId === "crop") {
         return (
-          this.currentMainButton === "crop" 
+          this.currentMainButton === "crop" ||
+          this.currentMainButton === "crop1" ||
+          this.currentMainButton === "crop2"  
         );
       } 
       return this.currentMainButton === buttonId;

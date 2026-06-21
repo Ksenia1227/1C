@@ -41,5 +41,6 @@ router.get('/position', [checkJwt.checkToken],controller.getPosition)
 router.get('/entity_type', [checkJwt.checkToken],controller.getEntity_type)
 router.get('/unit', [checkJwt.checkToken],controller.getUnit)
 router.get('/nomeclature_type', [checkJwt.checkToken],controller.getNomenclature_type)
+router.get('/work_type', [checkJwt.checkToken],controller.getWork_type)
 
 module.exports = router
