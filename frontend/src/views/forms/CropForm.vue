@@ -10,10 +10,6 @@
           </div>
           <div class="form-grid">
             <div class="form-field">
-              <label>Группа</label>
-              <input v-model="field.group" type="text" />
-            </div>
-            <div class="form-field">
               <label>Наименование поля</label>
               <input v-model="field.name" type="text" />
             </div>
@@ -123,6 +119,7 @@
                 <option :value="3">Кормовые культуры</option>
                 <option :value="4">Бобовые культуры</option>
                 <option :value="5">Технические культуры</option>
+                <option :value="6">Пар</option>
               </select>
             </div>
           </div>
@@ -239,7 +236,6 @@ export default {
     addField() {
       this.formData.fields.push({
         tempId: this.generateTempId(),
-        group: "",
         name: "",
         field_area: null,
         code: "",

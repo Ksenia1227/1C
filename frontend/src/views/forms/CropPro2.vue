@@ -63,7 +63,7 @@
     </div>
 
     <div class="form-section">
-      <h3>Списание удобрений</h3>
+      <h3>Списание семян и удобрений</h3>
       <div class="items-list">
         <div
           v-for="(item, idx) in formData.fertilizerWriteOffs"
@@ -108,9 +108,9 @@
               </select>
             </div>
             <div class="form-field">
-              <label>Номенклатура (топливо)</label>
+              <label>Номенклатура</label>
               <select v-model="item.nomenclature_id">
-                <option :value="null">Выберите топливо</option>
+                <option :value="null">Выберите номенклатуру</option>
                 <option
                   v-for="n in nomenclatures"
                   :key="n.nomenclature_id"

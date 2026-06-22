@@ -51,7 +51,7 @@
           <input v-model="formData.organization.registration_date" type="date" />
         </div>
 
-        <div class="form-field">
+        <div class="form-field full-width">
           <label>Регистрирующий орган</label>
           <input v-model="formData.organization.registration_authority" type="text" />
         </div>

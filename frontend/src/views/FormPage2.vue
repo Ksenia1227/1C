@@ -3,7 +3,6 @@
     <div class="page-header">
       <h2>Начальные остатки</h2>
       <div class="header-info">
-        <span class="date-label">Дата расчёта: {{ calcDate }}</span>
         <button class="refresh-btn" @click="loadData" :disabled="loading">
           {{ loading ? "Загрузка..." : "Обновить" }}
         </button>
@@ -58,7 +57,6 @@ export default {
     return {
       loading: false,
       error: null,
-      calcDate: "2026-04-01",
       balanceData: [],
     };
   },
@@ -84,16 +82,41 @@ export default {
       this.error = null;
 
       try {
-        const response = await instance.get("/initial-balance");
+        const response = await instance.get("/report/initial_report");
         console.log("Ответ от сервера:", response.data);
 
         if (response.data && response.data.length > 0) {
-          this.balanceData = response.data.map((item) => ({
-            code: item.code || "-",
-            debet: item.balance > 0 ? item.balance : 0,
-            credit: item.balance < 0 ? Math.abs(item.balance) : 0,
-            description: this.getDescription(item.code),
-          }));
+          const creditAccounts = ['02', '80', '84', '86'];
+          const excludeAccounts = ['60', '62'];
+          
+          let rawData = response.data
+            .filter(item => !excludeAccounts.includes(item.code))
+            .map((item) => {
+              const isCredit = creditAccounts.includes(item.code);
+              const balance = parseFloat(item.balance) || 0;
+              
+              return {
+                code: item.code || "-",
+                debet: isCredit ? 0 : Math.round(balance),
+                credit: isCredit ? Math.round(balance) : 0,
+                description: this.getDescription(item.code),
+              };
+            });
+
+          let totalDebet = rawData.reduce((sum, item) => sum + item.debet, 0);
+          let totalCredit = rawData.reduce((sum, item) => sum + item.credit, 0);
+          
+          const diff = totalDebet - totalCredit;
+          if (diff !== 0 && rawData.length > 0) {
+            for (let item of rawData) {
+              if (item.debet > 0) {
+                item.debet = item.debet - diff;
+                break;
+              }
+            }
+          }
+
+          this.balanceData = rawData;
         } else {
           this.balanceData = [];
         }
@@ -121,8 +144,6 @@ export default {
         "43": "Готовая продукция: товарное молоко, бычки",
         "51": "Расчетный счет: остаток денежных средств в банке",
         "50": "Касса: денежные средства в кассе предприятия",
-        "60": "Расчеты с поставщиками",
-        "62": "Расчеты с покупателями",
         "80": "Уставный капитал: зарегистрированный уставный капитал",
         "84": "Нераспределенная прибыль (Непокрытый убыток): прибыль по итогам предыдущих лет",
         "86": "Целевое финансирование: государственная субсидия на поддержку растениеводства",
